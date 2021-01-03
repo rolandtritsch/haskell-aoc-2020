@@ -1,0 +1,11 @@
+resolver: lts-15.13
+
+# User packages to be built.
+packages:
+- .
+
+# Dependency packages to be pulled from upstream that are not in the resolver.
+extra-deps:
+- Unique-0.4.7.7
+- megaparsec-8.0.0
+- hspec-megaparsec-2.1.0
