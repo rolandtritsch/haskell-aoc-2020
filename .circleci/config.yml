@@ -1,0 +1,45 @@
+version: 2.1
+jobs:
+  build-haskell:
+    docker:
+      - image: fpco/stack-build:lts
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore Cached Dependencies
+          keys:
+            - cci-haskell-aoc-2020-v1-{{ checksum "package.yaml" }}
+      - run:
+          name: Resolve/Update Dependencies
+          command: stack setup
+      - run:
+          name: Run tests
+          command: stack build :haskell-aoc-test
+          no_output_timeout: 60m
+      - run:
+          name: Run exe
+          command: stack build :haskell-aoc-exe --exec haskell-aoc-exe
+          no_output_timeout: 60m
+      - run:
+          name: Install executable
+          command: stack install
+      - save_cache:
+          name: Cache Dependencies
+          key: cci-haskell-aoc-2020-v1-{{ checksum "package.yaml" }}
+          paths:
+            - ~/.stack
+            - ~/.stack-work
+      - store_artifacts:
+          path: ~/.local/bin/haskell-aoc-exe
+          destination: haskell-aoc-exe
+
+workflows:
+  version: 2
+  full_cycle:
+    jobs:
+      - build-haskell
+
+general:
+  branches:
+    only:
+      - trunk
