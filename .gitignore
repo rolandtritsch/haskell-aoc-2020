@@ -1,0 +1,7 @@
+haskell-aoc.cabal
+stack.yaml.lock
+
+.stack-work/
+dist/
+
+**/#*#
