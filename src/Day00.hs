@@ -21,11 +21,11 @@ import Util (inputRaw, Parser)
 type Word = String
 type Words = [Word]
 
--- | read the input file
+-- | read the input file.
 input :: [String]
 input = (lines . inputRaw) "input/Day00p1.txt"
 
--- | parse the input
+-- | parse the input.
 parseWords :: Parser Words
 parseWords = manyTill (parseWord <* optional newline) eof
 

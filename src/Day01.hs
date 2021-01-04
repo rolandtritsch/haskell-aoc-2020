@@ -3,13 +3,14 @@ Problem: <https://adventofcode.com/2020/day/1>
 
 Solution:
 
-General - Simple. Suming up numbers.
+General - List combination/search problem. Build all combination
+of list elements. And lock for the ones that sum up to be 2020.
 
-Part 1 - Sum up the list of numbers.
+Part 1 - Do it with pairs.
 
-Part 2 - Turn the input into in indefinte stream of numbers/frequencies
-(using cycle), sum up the sub-lists (with scanl) and (recursively) look
-for the first duplicate to show up.
+Part 2 - Do it with triplets. Note: To make the search space small,
+we first search the expenses in reverse order and then stop searching,
+when the first 2 numbers are already bigger than 2020.
 -}
 module Day01 where
 
