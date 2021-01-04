@@ -87,6 +87,27 @@ executables:
     - timeit
     - containers
 
+  haskell-aoc-day02p1:
+    main: app/Day02/Part1.hs
+    ghc-options:
+    - -main-is Day02.Part1.main
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - timeit
+
+  haskell-aoc-day02p2:
+    main: app/Day02/Part2.hs
+    ghc-options:
+    - -main-is Day02.Part2.main
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - timeit
+    - containers
+
 tests:
   haskell-aoc-test:
     main: Spec.hs
@@ -133,6 +154,26 @@ tests:
     - Day01.Part2
     ghc-options:
     - -main-is Day01Spec.run
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - hspec
+    - timeit
+    - containers
+    - megaparsec
+    - hspec-megaparsec
+
+  haskell-aoc-test-day02:
+    main: Day02Spec.hs
+    source-dirs:
+    - test
+    - app
+    other-modules:
+    - Day02.Part1
+    - Day02.Part2
+    ghc-options:
+    - -main-is Day02Spec.run
     - -O2 -threaded
     - -Wall -Werror
     dependencies:
