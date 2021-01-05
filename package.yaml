@@ -30,6 +30,8 @@ library:
   - vector
   - safe
   - megaparsec
+  - regex-compat
+  - text
 
 executables:
   haskell-aoc-exe:
@@ -129,6 +131,29 @@ executables:
     - timeit
     - containers
 
+  haskell-aoc-day04p1:
+    main: app/Day04/Part1.hs
+    ghc-options:
+    - -main-is Day04.Part1.main
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - timeit
+    - regex-compat
+
+  haskell-aoc-day04p2:
+    main: app/Day04/Part2.hs
+    ghc-options:
+    - -main-is Day04.Part2.main
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - timeit
+    - containers
+    - regex-compat
+
 tests:
   haskell-aoc-test:
     main: Spec.hs
@@ -224,3 +249,24 @@ tests:
     - containers
     - megaparsec
     - hspec-megaparsec
+
+  haskell-aoc-test-day04:
+    main: Day04Spec.hs
+    source-dirs:
+    - test
+    - app
+    other-modules:
+    - Day04.Part1
+    - Day04.Part2
+    ghc-options:
+    - -main-is Day04Spec.run
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - hspec
+    - timeit
+    - containers
+    - megaparsec
+    - hspec-megaparsec
+    - regex-compat
