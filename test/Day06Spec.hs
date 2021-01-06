@@ -1,24 +1,24 @@
-module Day02Spec where
+module Day06Spec where
 
-import Day02
+import Day06
 import Test.Hspec
 
 run :: IO ()
 run = hspec $ do
   describe "input" $ do
     it "input" $ do
-      head (input "./input/Day02p1test.txt") `shouldBe` (Password 1 3 'a' "abcde")
+      head (input "./input/Day06p1test.txt") `shouldBe` ["abc"]
 
   describe "part1" $ do
     it "testcases" $ do
-      part1 (input "./input/Day02p1test.txt") `shouldBe` 2
+      part1 (input "./input/Day06p1test.txt") `shouldBe` 11
 
     it "puzzle" $ do
-      part1 (input "./input/Day02p1.txt") `shouldBe` 666
+      part1 (input "./input/Day06p1.txt") `shouldBe` 6583
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day02p1test.txt") `shouldBe` 1
+      part2 (input "./input/Day06p1test.txt") `shouldBe` 6
 
     it "puzzle" $ do
-      part2 (input "./input/Day02p1.txt") `shouldBe` 670
+      part2 (input "./input/Day06p1.txt") `shouldBe` 3290
