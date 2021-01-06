@@ -19,32 +19,23 @@ Part 2 - Find the one seat that is not on the plane.
 -}
 module Day05 where
 
+import Text.Regex (mkRegex, matchRegex)
+import Data.Maybe (fromJust)
+import Data.List (find)
+import Util (inputRaw)
 import Prelude
 
-import Data.List (init, maximum, minimum, find, notElem)
-import Data.String (lines)
-import Data.Binary (toStr)
-import Data.Regex as R
-import Data.Result (fromOk)
-import Data.Maybe (fromJust)
-
 data Step = Lower | Upper
-data Range = Range Integer Integer
+data Range = Range Int Int
 data Path = Path Range [Step]
 
-type BoardingPass = {
-    row :: Path,
-    col :: Path
-}
+data BoardingPass = BoardingPass Path Path
 
 input :: String -> [BoardingPass]
-input filename = map makeBoardingPass contents where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
-    makeBoardingPass line = {row = Path (Range 0 127) rowSteps, col = Path (Range 0 7) colSteps} where
-        linePattern = fromOk $ R.compile "^((F|B){7})((L|R){3})$" []
-        (rowPath, colPath) = case tail $ R.split line linePattern [R.Trim] of
-            [rp|[_|[cp|_]]] -> (rp, cp)
-            _ -> ("","")
+input filename = map makeBoardingPass $ lines $ inputRaw filename where
+    makeBoardingPass line = BoardingPass (Path (Range 0 127) rowSteps) (Path (Range 0 7) colSteps) where
+        linePattern = mkRegex "^((F|B)*)((L|R)*)$"
+        (Just (rowPath:_:colPath:_)) = matchRegex linePattern line
         rowSteps = map makeStep rowPath where
             makeStep 'F' = Lower
             makeStep 'B' = Upper
@@ -54,21 +45,21 @@ input filename = map makeBoardingPass contents where
             makeStep 'R' = Upper
             makeStep _ = Upper -- Never happening. Protected by regex above.
 
-makeSeatId :: BoardingPass -> Integer
-makeSeatId boardingPass = rowId * 8 + colId where
-    rowId = walkPath boardingPass.row
-    colId = walkPath boardingPass.col
+makeSeatId :: BoardingPass -> Int
+makeSeatId (BoardingPass row col) = rowId * 8 + colId where
+    rowId = walkPath row
+    colId = walkPath col
 
-walkPath :: Path -> Integer
-walkPath (Path (Range from to) [Lower|steps]) = walkPath (Path (Range from ((from+to)/2)) steps)
-walkPath (Path (Range from to) [Upper|steps]) = walkPath (Path (Range ((from+to)/2+1) to) steps)
+walkPath :: Path -> Int
+walkPath (Path (Range from to) (Lower:steps)) = walkPath (Path (Range from (div (from+to) 2)) steps)
+walkPath (Path (Range from to) (Upper:steps)) = walkPath (Path (Range (div (from+to) 2+1) to) steps)
 walkPath (Path (Range from _) []) = from
 
-part1 :: [BoardingPass] -> Integer
+part1 :: [BoardingPass] -> Int
 part1 bs = maximum seatIds where
     seatIds = map makeSeatId bs
 
-part2 :: [BoardingPass] -> Integer
+part2 :: [BoardingPass] -> Int
 part2 bs = fromJust $ find (\s -> notElem s seatIds) allSeats where
     seatIds = map makeSeatId bs
     allSeats = [(minimum seatIds) .. (maximum seatIds)]
