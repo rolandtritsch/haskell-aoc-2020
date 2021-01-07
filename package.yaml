@@ -229,10 +229,6 @@ tests:
     main: Day01Spec.hs
     source-dirs:
     - test
-    - app
-    other-modules:
-    - Day01.Part1
-    - Day01.Part2
     ghc-options:
     - -main-is Day01Spec.run
     - -O2 -threaded
@@ -240,19 +236,11 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
-    - timeit
-    - containers
-    - megaparsec
-    - hspec-megaparsec
 
   haskell-aoc-test-day02:
     main: Day02Spec.hs
     source-dirs:
     - test
-    - app
-    other-modules:
-    - Day02.Part1
-    - Day02.Part2
     ghc-options:
     - -main-is Day02Spec.run
     - -O2 -threaded
@@ -260,19 +248,11 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
-    - timeit
-    - containers
-    - megaparsec
-    - hspec-megaparsec
 
   haskell-aoc-test-day03:
     main: Day03Spec.hs
     source-dirs:
     - test
-    - app
-    other-modules:
-    - Day03.Part1
-    - Day03.Part2
     ghc-options:
     - -main-is Day03Spec.run
     - -O2 -threaded
@@ -280,19 +260,11 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
-    - timeit
-    - containers
-    - megaparsec
-    - hspec-megaparsec
 
   haskell-aoc-test-day04:
     main: Day04Spec.hs
     source-dirs:
     - test
-    - app
-    other-modules:
-    - Day04.Part1
-    - Day04.Part2
     ghc-options:
     - -main-is Day04Spec.run
     - -O2 -threaded
@@ -300,20 +272,11 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
-    - timeit
-    - containers
-    - megaparsec
-    - hspec-megaparsec
-    - regex-compat
 
   haskell-aoc-test-day05:
     main: Day05Spec.hs
     source-dirs:
     - test
-    - app
-    other-modules:
-    - Day05.Part1
-    - Day05.Part2
     ghc-options:
     - -main-is Day05Spec.run
     - -O2 -threaded
@@ -321,20 +284,11 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
-    - timeit
-    - containers
-    - megaparsec
-    - hspec-megaparsec
-    - regex-compat
 
   haskell-aoc-test-day06:
     main: Day06Spec.hs
     source-dirs:
     - test
-    - app
-    other-modules:
-    - Day06.Part1
-    - Day06.Part2
     ghc-options:
     - -main-is Day06Spec.run
     - -O2 -threaded
@@ -342,20 +296,11 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
-    - timeit
-    - containers
-    - megaparsec
-    - hspec-megaparsec
-    - regex-compat
 
   haskell-aoc-test-day07:
     main: Day07Spec.hs
     source-dirs:
     - test
-    - app
-    other-modules:
-    - Day07.Part1
-    - Day07.Part2
     ghc-options:
     - -main-is Day07Spec.run
     - -O2 -threaded
@@ -363,8 +308,3 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
-    - timeit
-    - containers
-    - megaparsec
-    - hspec-megaparsec
-    - regex-compat
