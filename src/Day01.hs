@@ -13,26 +13,13 @@
 -- when the first 2 numbers are already bigger than 2020.
 module Day01 where
 
-import Text.Megaparsec (eof, manyTill, optional)
-import Text.Megaparsec.Char (newline)
-import Util (Parser, inputParser, inputRaw, integer)
+import Util (inputRaw)
 
 type Expense = Int
 
 -- | read the input file.
 input :: String -> [Expense]
 input = map read . lines . inputRaw
-
--- | the parsed input.
-parsedInput :: String -> [Expense]
-parsedInput = inputParser parseExpenses
-
--- | parse the expenses.
-parseExpenses :: Parser [Expense]
-parseExpenses = manyTill (parseExpense <* optional newline) eof
-
-parseExpense :: Parser Int
-parseExpense = integer
 
 part1 :: [Expense] -> Int
 part1 expenses = x * y

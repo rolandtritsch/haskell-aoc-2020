@@ -9,5 +9,5 @@ import Day01
 -- | main
 main :: IO ()
 main = do
-  (time, result) <- timeItT $ evaluate $ (part1 . parsedInput) "./input/Day01p1.txt"
+  (time, result) <- timeItT $ evaluate $ (part1 . input) "./input/Day01p1.txt"
   printf "Day01: Part1 (%d, %f)\n" result time
