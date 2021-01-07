@@ -1,42 +1,26 @@
-{-|
-Problem: <https://adventofcode.com/2020/day/0>
-
-Solution:
-
-General - ???
-
-Part 1 - ???
-
-Part 2 - ???
--}
+-- |
+-- Problem: <https://adventofcode.com/2020/day/0>
+--
+-- Solution:
+--
+-- General - ???
+--
+-- Part 1 - ???
+--
+-- Part 2 - ???
 module Day00 where
 
-import Prelude hiding (Word)
-
-import Text.Megaparsec (manyTill, many, eof, optional)
-import Text.Megaparsec.Char (newline, alphaNumChar)
-
-import Util (inputRaw, Parser)
-
-type Word = String
-type Words = [Word]
+import Util (inputRaw)
+import Prelude
 
 -- | read the input file.
-input :: [String]
-input = (lines . inputRaw) "input/Day00p1.txt"
-
--- | parse the input.
-parseWords :: Parser Words
-parseWords = manyTill (parseWord <* optional newline) eof
-
-parseWord :: Parser Word
-parseWord = many alphaNumChar
+input :: String -> [String]
+input = lines . inputRaw
 
 -- | solve part1.
-part1 :: [String] -> Integer
-part1 _ = 1
+part1 :: [String] -> Int
+part1 = length
 
 -- | solve the part2.
-part2 :: [String] -> Integer
-part2 _ = 2
-
+part2 :: [String] -> Int
+part2 = length
