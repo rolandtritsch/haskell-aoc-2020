@@ -56,7 +56,7 @@ collectOuters :: IsIn -> Bag -> [Bag]
 collectOuters isIn bag = processOuters $ M.lookup bag isIn
   where
     processOuters Nothing = [bag]
-    processOuters (Just outers) = (foldl (++) [] $ map (collectOuters isIn) outers) ++ [bag]
+    processOuters (Just outers) = concatMap (collectOuters isIn) outers ++ [bag]
 
 part1 :: Bags -> Int
 part1 (Bags _ isIn) = length outerBags - 1
