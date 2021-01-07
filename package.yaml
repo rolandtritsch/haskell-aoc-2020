@@ -200,6 +200,29 @@ executables:
     - containers
     - regex-compat
 
+  haskell-aoc-day07p1:
+    main: app/Day07/Part1.hs
+    ghc-options:
+    - -main-is Day07.Part1.main
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - timeit
+    - regex-compat
+
+  haskell-aoc-day07p2:
+    main: app/Day07/Part2.hs
+    ghc-options:
+    - -main-is Day07.Part2.main
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - timeit
+    - containers
+    - regex-compat
+
 tests:
   haskell-aoc-test:
     main: Spec.hs
@@ -348,6 +371,27 @@ tests:
     - Day06.Part2
     ghc-options:
     - -main-is Day06Spec.run
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - hspec
+    - timeit
+    - containers
+    - megaparsec
+    - hspec-megaparsec
+    - regex-compat
+
+  haskell-aoc-test-day07:
+    main: Day07Spec.hs
+    source-dirs:
+    - test
+    - app
+    other-modules:
+    - Day07.Part1
+    - Day07.Part2
+    ghc-options:
+    - -main-is Day07Spec.run
     - -O2 -threaded
     - -Wall -Werror
     dependencies:
