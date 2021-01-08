@@ -235,6 +235,8 @@ tests:
 
   haskell-aoc-test-day00:
     main: Day00Spec.hs
+    other-modules:
+    - Day00Spec
     source-dirs:
     - test
     ghc-options:
@@ -247,6 +249,8 @@ tests:
 
   haskell-aoc-test-day01:
     main: Day01Spec.hs
+    other-modules:
+    - Day01Spec
     source-dirs:
     - test
     ghc-options:
@@ -259,6 +263,8 @@ tests:
 
   haskell-aoc-test-day02:
     main: Day02Spec.hs
+    other-modules:
+    - Day02Spec
     source-dirs:
     - test
     ghc-options:
@@ -271,6 +277,8 @@ tests:
 
   haskell-aoc-test-day03:
     main: Day03Spec.hs
+    other-modules:
+    - Day03Spec
     source-dirs:
     - test
     ghc-options:
@@ -283,6 +291,8 @@ tests:
 
   haskell-aoc-test-day04:
     main: Day04Spec.hs
+    other-modules:
+    - Day04Spec
     source-dirs:
     - test
     ghc-options:
@@ -295,6 +305,8 @@ tests:
 
   haskell-aoc-test-day05:
     main: Day05Spec.hs
+    other-modules:
+    - Day05Spec
     source-dirs:
     - test
     ghc-options:
@@ -307,6 +319,8 @@ tests:
 
   haskell-aoc-test-day06:
     main: Day06Spec.hs
+    other-modules:
+    - Day06Spec
     source-dirs:
     - test
     ghc-options:
@@ -319,6 +333,8 @@ tests:
 
   haskell-aoc-test-day07:
     main: Day07Spec.hs
+    other-modules:
+    - Day07Spec
     source-dirs:
     - test
     ghc-options:
@@ -331,6 +347,8 @@ tests:
 
   haskell-aoc-test-day08:
     main: Day08Spec.hs
+    other-modules:
+    - Day08Spec
     source-dirs:
     - test
     ghc-options:
