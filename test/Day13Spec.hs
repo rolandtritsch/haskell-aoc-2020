@@ -8,8 +8,8 @@ run = hspec $ do
   describe "input" $ do
     it "input" $ do
       let schedule = input "./input/Day13p1test.txt"
-      departure schedule `shouldBe` 0
-      length (busses schedule) `shouldBe` 0
+      departure schedule `shouldBe` 939
+      length (busses schedule) `shouldBe` 5
 
   describe "part1" $ do
     it "testcases" $ do
@@ -20,7 +20,7 @@ run = hspec $ do
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day13p1test.txt") `shouldBe` 1
+      part2 (input "./input/Day13p1test.txt") `shouldBe` 5
 
     it "puzzle" $ do
       part2 (input "./input/Day13p1.txt") `shouldBe` 9
