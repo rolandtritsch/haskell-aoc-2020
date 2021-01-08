@@ -1,79 +1,62 @@
-{-|
-Problem: <https://adventofcode.com/2020/day/8>
-
-Solution:
-
-General - A(nother) stack machine problem. Execute instructions
-until you have reached the end of the program.
-
-Part 1 - The end of the program is reached, when I am hitting
-a program counter the second time.
-
-Part 2 - ???
--}
+-- |
+-- Problem: <https://adventofcode.com/2020/day/8>
+--
+-- Solution:
+--
+-- General - A(nother) stack machine problem. Execute instructions
+-- until you have reached the end of the program.
+--
+-- Part 1 - The end of the program is reached, when I am hitting
+-- a program counter the second time.
+--
+-- Part 2 - ???
 module Day08 where
 
+import Data.List.Split (splitOn)
+import Util (inputRaw)
 import Prelude
 
-import Data.List (init, (!!), elem)
-import Data.String (lines, split)
-import Data.Binary (toStr)
+data Code = NOP | ACC | JMP
+  deriving (Eq, Show)
 
-data Code = NOP | ACC | JMP | ERR
+data Instruction = Instruction Code Int
+  deriving (Eq, Show)
 
-data Instruction = Instruction Code Integer
+type Program = (Int, Int)
 
-type Program = {
-  counter :: Integer,
-  register :: Integer,
-  instructions :: [Instruction]
-}
+type Stack = [Int]
 
 makeCode :: String -> Code
 makeCode "nop" = NOP
 makeCode "acc" = ACC
 makeCode "jmp" = JMP
-makeCode _ = ERR
+makeCode _ = error "Unknown code"
 
-input :: String -> Program
-input filename = {counter = 0, register = 0, instructions = instructions} where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
-    instructions = map processLine contents where
-        processLine l = Instruction code argument where
-            tokens = split l " "
-            code = makeCode (tokens !! 0)
-            argument = read (tokens !! 1)
+makeArgument :: String -> Int
+makeArgument ('+':arg) = read arg
+makeArgument arg = read arg
 
-execute :: Instruction -> Program -> Program
-execute (Instruction NOP _) program = {
-    counter = program.counter + 1,
-    register = program.register,
-    instructions = program.instructions
-}
-execute (Instruction ACC increment) program = {
-    counter = program.counter + 1,
-    register = program.register + increment,
-    instructions = program.instructions
-}
-execute (Instruction JMP offset) program = {
-    counter = program.counter + offset,
-    register = program.register,
-    instructions = program.instructions
-}
-execute _ program = {
-    counter = 0,
-    register = 0,
-    instructions = []
-}
+input :: String -> [Instruction]
+input filename = map makeInstruction $ lines $ inputRaw filename
+  where
+    makeInstruction l = Instruction (makeCode code) (makeArgument argument)
+      where
+        (code : argument : _) = splitOn " " l
 
-run :: Program -> [Integer] -> Integer
-run program stack
-    | elem program.counter stack = program.register
-    | otherwise = run next (stack ++ [program.counter]) where
-        next = execute (program.instructions !! program.counter) program
+executeInstruction :: Instruction -> Program -> Program
+executeInstruction (Instruction NOP _) (counter, register) = (counter + 1, register)
+executeInstruction (Instruction ACC increment) (counter, register) = (counter + 1, register + increment)
+executeInstruction (Instruction JMP offset) (counter, register) = (counter + offset, register)
 
-part1 :: Program -> Integer
-part1 program = run program []
+runProgram :: [Instruction] -> Program -> Stack -> Int
+runProgram instructions program@(counter, register) stack
+  | elem counter stack = register
+  | otherwise = runProgram instructions next (stack ++ [counter])
+  where
+    next = executeInstruction (instructions !! counter) program
 
-part2 :: Program -> Integer
-part2 program = length program.instructions 
+part1 :: [Instruction] -> Int
+part1 instructions = runProgram instructions (0, 0) []
+
+part2 :: [Instruction] -> Int
+part2 instructions = length instructions
