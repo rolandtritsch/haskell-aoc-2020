@@ -8,7 +8,7 @@ run = hspec $ do
   describe "input" $ do
     it "input" $ do
       let (Seats _ _ dimensions) = input "./input/Day11p1test.txt"
-      dimensions `shouldBe` (0,0)
+      dimensions `shouldBe` (10,10)
 
   describe "part1" $ do
     it "testcases" $ do
@@ -19,7 +19,7 @@ run = hspec $ do
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day11p1test.txt") `shouldBe` 1
+      part2 (input "./input/Day11p1test.txt") `shouldBe` 100
 
     it "puzzle" $ do
       part2 (input "./input/Day11p1.txt") `shouldBe` 8820
