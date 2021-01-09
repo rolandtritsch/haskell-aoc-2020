@@ -322,26 +322,6 @@ executables:
     - haskell-aoc
     - timeit
 
-  haskell-aoc-day13p1:
-    main: app/Day13/Part1.hs
-    ghc-options:
-    - -main-is Day13.Part1.main
-    - -O2 -threaded
-    - -Wall -Werror
-    dependencies:
-    - haskell-aoc
-    - timeit
-
-  haskell-aoc-day13p2:
-    main: app/Day13/Part2.hs
-    ghc-options:
-    - -main-is Day13.Part2.main
-    - -O2 -threaded
-    - -Wall -Werror
-    dependencies:
-    - haskell-aoc
-    - timeit
-
   haskell-aoc-day14p1:
     main: app/Day14/Part1.hs
     ghc-options:
