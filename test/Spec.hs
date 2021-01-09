@@ -17,6 +17,7 @@ import Day13Spec
 import Day14Spec
 import Day15Spec
 import Day16Spec
+import Day17Spec
 
 main :: IO ()
 main = do
@@ -54,3 +55,5 @@ main = do
   Day15Spec.run
   putStrLn "\n--Day16Spec ..."
   Day16Spec.run
+  putStrLn "\n--Day17Spec ..."
+  Day17Spec.run
