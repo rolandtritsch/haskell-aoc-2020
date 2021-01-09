@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@4.2.0
 jobs:
   build-haskell:
     docker:
@@ -32,13 +34,17 @@ jobs:
       - store_artifacts:
           path: ~/.local/bin/haskell-aoc-exe
           destination: haskell-aoc-exe
-
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 workflows:
   version: 2
   full_cycle:
     jobs:
       - build-haskell
-
 general:
   branches:
     only:
