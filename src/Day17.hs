@@ -32,12 +32,11 @@ module Day17 where
 
 import Prelude
 
-import Data.List (init, sum, (!!), notElem, nub)
-import Data.String (lines)
-import Data.Binary (toStr)
-import Data.Set as S
+import Data.List (nub)
+import qualified Data.Set as S
+import Util (inputRaw)
 
-type Coordinate = (Integer, Integer, Integer)
+type Coordinate = (Int, Int, Int)
 type Pocket = S.Set Coordinate
 
 input :: String -> Pocket
@@ -72,10 +71,10 @@ cycle pocket = S.fromList (nextActive ++ nextActive') where
             makeCoordinates (x,y,z) offsets = map (\(x',y',z') -> (x+x',y+y',z+z')) offsets
         inactive = filter (\e -> notElem e active) possibleInactive
         
-part1 :: Pocket -> Integer
+part1 :: Pocket -> Int
 part1 pocket = S.size $ go (6-1) $ cycle pocket where
     go 0 p = p
     go n p = go (n-1) $ cycle p
 
-part2 :: Pocket -> Integer
+part2 :: Pocket -> Int
 part2 pocket = S.size pocket
