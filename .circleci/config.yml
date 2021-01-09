@@ -45,7 +45,7 @@ workflows:
   full_cycle:
     jobs:
       - build-haskell:
-        context: Slack
+          context: Slack
 
 general:
   branches:
