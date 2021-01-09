@@ -18,38 +18,35 @@ module Day15 where
 
 import Prelude
 
-import Data.List (init)
-import Data.String (lines)
-import Data.Binary (toStr)
-import Data.Map as M
+import qualified Data.Map as M
+import Util (inputRaw)
 
-type Spoken = M.Map Integer [Integer]
+type Spoken = M.Map Int [Int]
 
-input :: String -> [Integer]
-input filename = map read contents where
-    contents = init $ lines $ toStr $ unsafePerformIO $ readFile filename
+input :: String -> [Int]
+input filename = map read $ lines $ inputRaw filename
 
-speak :: Integer -> Integer -> Spoken -> Spoken
-speak number turn spoken = M.updateWithInit number (\ts -> [turn] ++ ts) [turn] spoken
+speak :: Int -> Int -> Spoken -> Spoken
+speak number turn spoken = M.insertWith (++) number [turn] spoken
 
-whatToSay :: Integer -> Integer -> Spoken -> Integer
+whatToSay :: Int -> Int -> Spoken -> Int
 whatToSay number turn spoken
     | M.notMember number spoken = 0
     | otherwise = turn - lastTime where
-        lastTime = head $ M.get number spoken
+        lastTime = head $ spoken M.! number
 
-nextTurn :: Integer -> Spoken -> Integer -> Integer -> [Integer]
+nextTurn :: Int -> Spoken -> Int -> Int -> [Int]
 nextTurn number _  _ 0 = [number] 
 nextTurn number spoken turn turned = nextTurn nextNumber nextSpoken (turn + 1) (turned - 1) ++ [number] where
     nextNumber = whatToSay number turn spoken
     nextSpoken = speak number turn spoken
 
-part1 :: [Integer] -> Integer
+part1 :: [Int] -> Int
 part1 initial = head $ nextTurn initialNumber initialSpoken initialTurn initialTurned  where
     initialSpoken = M.fromList $ zip initial [[t]| t <- [1..(length initial)]]
     initialNumber = whatToSay (last initial) (length initial) initialSpoken
-    initialTurn = (length initial) + 1
-    initialTurned = 2020 - (length initial) - 1
+    initialTurn = length initial + 1
+    initialTurned = 2020 - length initial - 1
 
-part2 :: [Integer] -> Integer
+part2 :: [Int] -> Int
 part2 initial = length initial
