@@ -16,6 +16,7 @@ import Prelude
 
 import qualified Text.Regex as R
 import Util (inputRaw)
+import Data.Maybe (fromJust)
 
 data Game = Game {
     player1 :: [Int],
@@ -24,31 +25,26 @@ data Game = Game {
 
 input :: String -> Game
 input filename = Game {player1 = player1', player2 = player2'} where
-    contents = toStr $ unsafePerformIO $ readFile filename
-    (player1', player2') = (buildDeck tokens 0,  buildDeck tokens 3) where
+   (player1', player2') = (buildDeck tokens 0,  buildDeck tokens 3) where
       linePattern = R.mkRegex "(Player [12]:\\n([0-9]*\\n)*)"
-      tokens = R.matchRegex linePattern contents
-      buildDeck ts i = map read $ lines $ tokens !! i
+      tokens = fromJust $ R.matchRegex linePattern $ inputRaw filename
+      buildDeck ts i = map read $ lines $ ts !! i
 
 score :: [Int] -> Int
 score deck = sum $ map (\(a, b) -> a * b) $ zip deck (reverse [1..(length deck)])
 
-isEmpty :: forall a. [a] -> Bool
-isEmpty [] = true
-isEmpty _  = false
-
 playRound :: Game -> Game
 playRound game 
-    | isEmpty game.player1 || isEmpty game.player2 = game
+    | null (player1 game) || null (player2 game) = game
     | otherwise = playRound nextGame where
-        cards = (head $ game.player1, head $ game.player2)
-        nextGame = playCards cards (tail game.player1) (tail game.player2) where
+        cards = (head (player1 game), head (player2 game))
+        nextGame = playCards cards (tail (player1 game)) (tail (player2 game)) where
             playCards (card1, card2) deck1 deck2
-                | card1 > card2 = {player1 = deck1 ++ [card1, card2], player2 = deck2}
-                | otherwise = {player1 = deck1, player2 = deck2  ++ [card2, card1]}
+                | card1 > card2 = Game {player1 = deck1 ++ [card1, card2], player2 = deck2}
+                | otherwise = Game {player1 = deck1, player2 = deck2  ++ [card2, card1]}
 
 part1 :: Game -> Int
-part1 game = winingScore done.player1 done.player2 where
+part1 game = winingScore (player1 done) (player2 done) where
     winingScore deck1 [] = score deck1 
     winingScore [] deck2 = score deck2 
     winingScore _ _ = 0 
