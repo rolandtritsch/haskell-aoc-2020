@@ -8,7 +8,7 @@ run = hspec $ do
   describe "input" $ do
     it "input" $ do
       let expected = input "./input/Day19p1test.txt"
-      messages expected `shouldBe` [[""]]
+      messages expected `shouldBe` ["ababbb","bababa","abbbab","aaabbb","aaaabbb"]
 
   describe "part1" $ do
     it "testcases" $ do

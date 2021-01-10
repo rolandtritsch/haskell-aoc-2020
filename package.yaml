@@ -24,9 +24,12 @@ library:
   - -O2
   - -Wall -Werror
   dependencies:
+  - MissingH
   - containers
-  - split
+  - regex-base
   - regex-compat
+  - regex-pcre
+  - split
   - text
 
 executables:
