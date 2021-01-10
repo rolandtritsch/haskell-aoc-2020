@@ -432,6 +432,7 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
+    - containers
 
   haskell-aoc-test-day00:
     main: Day00Spec.hs
