@@ -46,6 +46,8 @@ import qualified Day21.Part1 as D21P1
 import qualified Day21.Part2 as D21P2
 import qualified Day22.Part1 as D22P1
 import qualified Day22.Part2 as D22P2
+import qualified Day23.Part1 as D23P1
+import qualified Day23.Part2 as D23P2
 
 main :: IO ()
 main = do
@@ -95,3 +97,5 @@ main = do
   D21P2.main
   D22P1.main
   D22P2.main
+  D23P1.main
+  D23P2.main
