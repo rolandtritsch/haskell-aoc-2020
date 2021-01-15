@@ -7,7 +7,7 @@ run :: IO ()
 run = hspec $ do
   describe "input" $ do
     it "input" $ do
-      length (player1 (input "./input/Day22p1test.txt")) `shouldBe` 1
+      length (player1 (input "./input/Day22p1test.txt")) `shouldBe` 5
 
   describe "part1" $ do
     it "testcases" $ do
@@ -18,7 +18,7 @@ run = hspec $ do
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day22p1test.txt") `shouldBe` 1
+      part2 (input "./input/Day22p1test.txt") `shouldBe` 5
 
     it "puzzle" $ do
-      part2 (input "./input/Day22p1.txt") `shouldBe` 1
+      part2 (input "./input/Day22p1.txt") `shouldBe` 25
