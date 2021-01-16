@@ -40,13 +40,13 @@ input filename = map processTile $ lines $ inputRaw filename
 
 -- | walk a step (until there are no more steps)
 walk :: Steps -> Position -> Position
+walk [] position = position
 walk ("e" : steps) (Position x y) = walk steps (Position (x + 1) y)
 walk ("se" : steps) (Position x y) = walk steps (Position (x + 1) (y -1))
 walk ("sw" : steps) (Position x y) = walk steps (Position x (y -1))
 walk ("w" : steps) (Position x y) = walk steps (Position (x -1) y)
 walk ("nw" : steps) (Position x y) = walk steps (Position (x -1) (y + 1))
 walk ("ne" : steps) (Position x y) = walk steps (Position x (y + 1))
-walk [] position = position
 walk _ _ = error "Invalid step"
 
 -- | solve part1.
