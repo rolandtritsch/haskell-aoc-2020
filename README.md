@@ -4,6 +4,8 @@
 
 Note: This is (still) work in progress :) ...
 
+![AoC](https://github.com/rolandtritsch/haskell-aoc-2020/blob/master/images/aoc-day25.png?raw=true)
+
 To make this work you need to ...
 
 * install [stack](https://www.haskellstack.org)
