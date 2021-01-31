@@ -19,6 +19,7 @@ module Day21 where
 import Data.List (nub)
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
+import qualified Data.Set as S
 import Data.Maybe (fromJust)
 import Data.String.Utils (strip)
 import qualified Text.Regex as R
@@ -29,65 +30,68 @@ type Allergene = String
 
 type Ingredient = String
 
-type Foods = M.Map Allergene [[Ingredient]]
+type Foods = M.Map Allergene [S.Set Ingredient]
 
 input :: String -> Foods
-input filename = foldl merge M.empty $ foldl (++) [] $ map processLine contents
+input filename = foldl merge M.empty $ flatten $ map processLine contents
   where
     contents = lines $ inputRaw filename
     processLine l = map (\a -> (strip a, [ingredients])) allergens
       where
         linePattern = R.mkRegex "^(.*) \\(contains (.*)\\)$"
         tokens = fromJust $ R.matchRegex linePattern l
-        (ingredients, allergens) = (splitOn " " (tokens !! 0), splitOn "," (tokens !! 1))
+        (ingredients, allergens) = (S.fromList (splitOn " " (tokens !! 0)), splitOn "," (tokens !! 1))
     merge m (a, is) = M.insertWith (++) a is m
 
-intersect :: Eq a => [a] -> [a] -> [a]
-intersect [] _ = []
-intersect (x : xs) ys
-  | elem x ys = x : intersect xs ys
-  | otherwise = intersect xs ys
+intersect :: Ord a => S.Set a -> S.Set a -> S.Set a
+intersect s s' = S.intersection s s'
 
-intersect' :: Eq a => [[a]] -> [a]
-intersect' [] = []
+intersect' :: Ord a => [S.Set a] -> S.Set a
+intersect' [] = S.empty
 intersect' lists = foldl intersect (head lists) lists
 
-diffr :: Eq a => [a] -> [a] -> [a]
-diffr this fromThat = filter (\e -> notElem e this) fromThat
+diffr :: Ord a => S.Set a -> S.Set a -> S.Set a
+diffr this fromThat = S.filter (\e -> S.notMember e this) fromThat
 
-diffMapValues :: Eq v => [v] -> M.Map k [[v]] -> M.Map k [[v]]
+diffMapValues :: Ord v => S.Set v -> M.Map k [S.Set v] -> M.Map k [S.Set v]
 diffMapValues this m = M.mapWithKey (\_ vs -> diffValues this vs) m
   where
     diffValues this' vs = map (\fromThat -> diffr this' fromThat) vs
 
-isSingleton :: forall a. [a] -> Bool
-isSingleton [_] = True
-isSingleton _ = False
+isSingleton :: forall a. S.Set a -> Bool
+isSingleton s
+  | S.size s == 1 = True
+  | otherwise = False
 
-isSingleton' :: forall a. [[a]] -> Bool
-isSingleton' [[_]] = True
+isSingleton' :: forall a. [S.Set a] -> Bool
+isSingleton' [s]
+  | S.size s == 1 = True
+  | otherwise = False
 isSingleton' _ = False
 
 flatten :: forall a. [[a]] -> [a]
 flatten a = foldl (++) [] a
 
+flatten' :: forall a. [S.Set a] -> [a]
+flatten' a = foldl (\l s -> l ++ (S.toList s)) [] a
+
 removeIngredientsByIntersection :: Foods -> Foods
 removeIngredientsByIntersection foods = diffMapValues singletons foods
   where
     intersections = flatten $ M.elems $ M.mapWithKey (\_ v -> [intersect' v]) foods
-    singletons = flatten $ filter isSingleton intersections
+    singletons = S.fromList $ flatten' $ filter isSingleton intersections
 
 removeIngredientsBySingleton :: Foods -> Foods
 removeIngredientsBySingleton foods = diffMapValues singletons foods
   where
-    singletons = flatten $ flatten $ filter isSingleton' $ M.elems foods
+    singletons = S.fromList $ flatten' $ filter isSingleton $ flatten $ M.elems foods
 
 part1 :: Foods -> Int
 part1 foods = length safeToEat
   where
     safeToEat = filter (\i -> elem i incredientsFreeOfAllergens) allIncredients
-    allIncredients = flatten $ nub $ flatten $ M.elems foods
-    incredientsFreeOfAllergens = nub $ flatten $ flatten $ M.elems foodsFreeOfAllergens
+    allIncredients = flatten' $ nub $ flatten $ M.elems foods
+    incredientsFreeOfAllergens = nub $ flatten' $ flatten $ M.elems foodsFreeOfAllergens
     foodsFreeOfAllergens = go foods False
       where
         go foods' True = foods'
