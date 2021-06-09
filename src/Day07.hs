@@ -70,4 +70,4 @@ part1 (Bags _ isIn) = length outerBags - 1
     outerBags = nub $ collectOuters isIn "shiny gold"
 
 part2 :: Bags -> Int
-part2 (Bags contains _) = (countingBags contains ["shiny gold"]) - 1 
+part2 (Bags contains _) = countingBags contains ["shiny gold"] - 1 
