@@ -13,6 +13,7 @@ module Day07 where
 
 import Data.List (nub)
 import Data.List.Split (splitOn)
+import Data.Maybe (fromJust)
 import qualified Data.Map as M
 import Util (inputRaw)
 import Prelude
@@ -21,7 +22,7 @@ type Bag = String
 
 type OuterBag = Bag
 
-type InnerBag = (Integer, Bag)
+type InnerBag = [Bag]
 
 type Contains = M.Map OuterBag [InnerBag]
 
@@ -39,8 +40,8 @@ input filename = Bags contains isIn
         tokens = splitOn " " $ head $ splitOn " contain " l
         outer = (tokens !! 0) ++ " " ++ (tokens !! 1)
         inners = map processInnerBag $ splitOn ", " $ splitOn " contain " l !! 1
-        processInnerBag "no other bags." = (0, "other bags")
-        processInnerBag ib = (count, bag)
+        processInnerBag "no other bags." = []
+        processInnerBag ib = replicate count bag
           where
             tokens' = splitOn " " ib
             count = read $ head tokens'
@@ -49,8 +50,8 @@ input filename = Bags contains isIn
       where
         processContain isIn' (outer, inners) = foldl processInner isIn' inners
           where
-            processInner isIn'' (0, _) = isIn''
-            processInner isIn'' (_, bag) = M.insertWith (++) bag [outer] isIn''
+            processInner isIn'' [] = isIn''
+            processInner isIn'' bags = M.insertWith (++) (head bags) [outer] isIn''
 
 collectOuters :: IsIn -> Bag -> [Bag]
 collectOuters isIn bag = processOuters $ M.lookup bag isIn
@@ -58,10 +59,15 @@ collectOuters isIn bag = processOuters $ M.lookup bag isIn
     processOuters Nothing = [bag]
     processOuters (Just outers) = concatMap (collectOuters isIn) outers ++ [bag]
 
+countingBags :: Contains -> InnerBag -> Int
+countingBags _ [] = 0   
+countingBags contains bags = (length bags) + (sum $ map (\b -> processBags (fromJust (M.lookup b contains))) bags) where
+  processBags bs = sum $ map (countingBags contains) bs
+
 part1 :: Bags -> Int
 part1 (Bags _ isIn) = length outerBags - 1
   where
     outerBags = nub $ collectOuters isIn "shiny gold"
 
 part2 :: Bags -> Int
-part2 (Bags contains _) = M.size contains
+part2 (Bags contains _) = countingBags contains ["shiny gold"] - 1 
