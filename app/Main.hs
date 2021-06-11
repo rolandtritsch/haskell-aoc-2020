@@ -17,7 +17,7 @@ import qualified Day06.Part2 as D06P2
 import qualified Day07.Part1 as D07P1
 import qualified Day07.Part2 as D07P2
 import qualified Day08.Part1 as D08P1
--- import qualified Day08.Part2 as D08P2
+import qualified Day08.Part2 as D08P2
 import qualified Day09.Part1 as D09P1
 -- import qualified Day09.Part2 as D09P2
 import qualified Day10.Part1 as D10P1
@@ -72,7 +72,7 @@ main = do
   D07P1.main
   D07P2.main
   D08P1.main
---   D08P2.main
+  D08P2.main
   D09P1.main
 --   D09P2.main
   D10P1.main
