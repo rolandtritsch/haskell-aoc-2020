@@ -16,10 +16,9 @@
 -- NORMAL (and also return the accumulator). I will then find the
 -- first NORMAL termination and return the accumulator of that
 -- termination.
-
 module Day08 where
 
-import Data.List (nub, find)
+import Data.List (find, nub)
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import Util (inputRaw)
@@ -44,7 +43,7 @@ makeCode "jmp" = JMP
 makeCode _ = error "Unknown code"
 
 makeArgument :: String -> Int
-makeArgument ('+':arg) = read arg
+makeArgument ('+' : arg) = read arg
 makeArgument arg = read arg
 
 -- | Returns a/the list of instructions.
@@ -75,21 +74,24 @@ runProgram instructions program@(counter, accumulator) stack
 
 -- | Flip/swap the first instruction (if it is a NOP/JMP).
 fixInstruction :: [Instruction] -> [Instruction]
-fixInstruction ((Instruction NOP value):instructions) = Instruction JMP value : instructions
-fixInstruction ((Instruction JMP value):instructions) = Instruction NOP value : instructions
+fixInstruction ((Instruction NOP value) : instructions) = Instruction JMP value : instructions
+fixInstruction ((Instruction JMP value) : instructions) = Instruction NOP value : instructions
 fixInstruction instructions = instructions
 
 -- | Build (fixed) instruction lists (from a given instruction list).
 buildInstructions :: [Instruction] -> [[Instruction]]
-buildInstructions instructions = fixedInstructions where
-  fixedInstructions = nub $ map (\(h, t) -> h ++ fixInstruction t) splitInstructions
-  splitInstructions = map (\n -> splitAt n instructions) [0..length instructions - 1]
+buildInstructions instructions = fixedInstructions
+  where
+    fixedInstructions = nub $ map (\(h, t) -> h ++ fixInstruction t) splitInstructions
+    splitInstructions = map (\n -> splitAt n instructions) [0 .. length instructions - 1]
 
 part1 :: [Instruction] -> Int
-part1 instructions = accumulator where
-  (accumulator, _) = runProgram instructions (0,0) []
+part1 instructions = accumulator
+  where
+    (accumulator, _) = runProgram instructions (0, 0) []
 
 part2 :: [Instruction] -> Int
-part2 instructions = accumulator where
-  (accumulator, _) = fromJust $ find (\(_, exit) -> exit == NORMAL) runs
-  runs = map (\is -> runProgram is (0,0) []) (buildInstructions instructions)
+part2 instructions = accumulator
+  where
+    (accumulator, _) = fromJust $ find (\(_, exit) -> exit == NORMAL) runs
+    runs = map (\is -> runProgram is (0, 0) []) (buildInstructions instructions)

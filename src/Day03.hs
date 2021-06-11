@@ -4,7 +4,7 @@
 -- Solution:
 --
 -- General - (AFAI can see) Hamler does not support streams/lazy lists (yet).
--- Means for this one I will not use a datas structure based approach, but
+-- Means for this one I will not use a data structure based approach, but
 -- will compute the solution :).
 --
 -- For that we will read the input and will build and array of lines that
@@ -15,7 +15,7 @@
 --
 -- Then I am repeating this n times (the number of lines in the input file)
 -- advancing m steps (3) to the right until I am done (and count the number
--- of trees I am hitting on the way.
+-- of trees I am hitting on the way).
 --
 -- Part 1 - Doing the above.
 --
