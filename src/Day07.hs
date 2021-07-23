@@ -13,8 +13,8 @@ module Day07 where
 
 import Data.List (nub)
 import Data.List.Split (splitOn)
-import Data.Maybe (fromJust)
 import qualified Data.Map as M
+import Data.Maybe (fromJust)
 import Util (inputRaw)
 import Prelude
 
@@ -60,9 +60,10 @@ collectOuters isIn bag = processOuters $ M.lookup bag isIn
     processOuters (Just outers) = concatMap (collectOuters isIn) outers ++ [bag]
 
 countingBags :: Contains -> InnerBag -> Int
-countingBags _ [] = 0   
-countingBags contains bags = (length bags) + (sum $ map (\b -> processBags (fromJust (M.lookup b contains))) bags) where
-  processBags bs = sum $ map (countingBags contains) bs
+countingBags _ [] = 0
+countingBags contains bags = (length bags) + (sum $ map (\b -> processBags (fromJust (M.lookup b contains))) bags)
+  where
+    processBags bs = sum $ map (countingBags contains) bs
 
 part1 :: Bags -> Int
 part1 (Bags _ isIn) = length outerBags - 1
@@ -70,4 +71,4 @@ part1 (Bags _ isIn) = length outerBags - 1
     outerBags = nub $ collectOuters isIn "shiny gold"
 
 part2 :: Bags -> Int
-part2 (Bags contains _) = countingBags contains ["shiny gold"] - 1 
+part2 (Bags contains _) = countingBags contains ["shiny gold"] - 1
