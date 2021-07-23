@@ -8,7 +8,8 @@
 --
 -- Part 1 - Just use isIn (recursively) to find all outer bags for a given bag.
 --
--- Part 2 - ???
+-- Part 2 - Just use contains (recursively) to count how many bag colors can
+-- eventually contain at least one shiny gold bag.
 module Day07 where
 
 import Data.List (nub)
