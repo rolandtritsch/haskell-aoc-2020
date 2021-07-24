@@ -16,9 +16,9 @@ run = hspec $ do
       check [1,2,3] 2 `shouldBe` True
       check [1,2,4] 2 `shouldNotBe` True
 
-  describe "rests" $ do
+  describe "findEncryptionWeakness" $ do
     it "minmal" $ do
-      rests [1,2,3] `shouldBe` [[1], [1,2], [1,2,3]]
+      findEncryptionWeakness 3 [1,2,3] `shouldBe` (True, [1,2])
       
   describe "part1" $ do
     it "testcases" $ do
@@ -29,7 +29,7 @@ run = hspec $ do
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day09p1test.txt") `shouldBe` 20
+      part2 (input "./input/Day09p1test.txt") `shouldBe` 62
 
     it "puzzle" $ do
-      part2 (input "./input/Day09p1.txt") `shouldBe` 1000
+      part2 (input "./input/Day09p1.txt") `shouldBe` 13414198

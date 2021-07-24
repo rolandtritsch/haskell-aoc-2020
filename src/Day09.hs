@@ -29,18 +29,17 @@ check xmas preamble = not (null pairs)
     ns = take preamble xmas
     pairs = [(x, y) | x <- ns, y <- ns, x > y, x + y == n]
 
-rests :: [Int] -> [[Int]]
-rests (i:is) = foldl makeRest [[i]] is
+findEncryptionWeakness :: Int -> [Int] -> (Bool, [Int])
+findEncryptionWeakness invalidNumber (n:numbers) = go (n, [n]) numbers
   where
-    makeRest rs i' = rs ++ [last rs ++ [i']]
-rests _ = error "rests needs at least 2 elements"
-
-sums :: [Int] -> [(Int, Int)]
-sums (i:is) = foldl  [(i, i)] is
-
-findEncryptionWeakness :: [Int] -> [Int]
-findEncryptionWeakness ns 
-
+    go (n', ns') (n'':ns'')
+      | n' == invalidNumber = (True, ns')
+      | n' > invalidNumber = (False, numbers)
+      | otherwise = go (n' + n'', ns' ++ [n'']) ns''
+    go (n', ns') []
+      | n' == invalidNumber = (True, ns')
+      | otherwise = (False, numbers)
+findEncryptionWeakness _ [] = (False, [])
 
 part1 :: XMAS -> Int
 part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
@@ -51,7 +50,11 @@ part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
         ns' = tail ns
 
 part2 :: XMAS -> Int
-part2 (XMAS _ numbers)@xmas = minimum encryptionWeakness + maximum encryptionWeakness
+part2 xmas@(XMAS _ numbers) = minimum encryptionWeakness + maximum encryptionWeakness
   where
     invalidNumber = part1 xmas
-    encryptionWeakness = findEncryptionWeakness invalidNumber numbers
+    encryptionWeakness = go $ findEncryptionWeakness invalidNumber numbers
+      where
+        go (False, []) = []
+        go (False, rest) = go $ findEncryptionWeakness invalidNumber rest
+        go (True, weakness) = weakness
