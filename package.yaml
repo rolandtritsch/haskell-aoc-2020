@@ -703,6 +703,20 @@ tests:
     - haskell-aoc
     - hspec
 
+  haskell-aoc-test-day09:
+    main: Day09Spec.hs
+    other-modules:
+    - Day09Spec
+    source-dirs:
+    - test
+    ghc-options:
+    - -main-is Day09Spec.run
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - hspec
+
   haskell-aoc-test-day10:
     main: Day10Spec.hs
     other-modules:
