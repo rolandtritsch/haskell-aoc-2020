@@ -29,6 +29,19 @@ check xmas preamble = not (null pairs)
     ns = take preamble xmas
     pairs = [(x, y) | x <- ns, y <- ns, x > y, x + y == n]
 
+rests :: [Int] -> [[Int]]
+rests (i:is) = foldl makeRest [[i]] is
+  where
+    makeRest rs i' = rs ++ [last rs ++ [i']]
+rests _ = error "rests needs at least 2 elements"
+
+sums :: [Int] -> [(Int, Int)]
+sums (i:is) = foldl  [(i, i)] is
+
+findEncryptionWeakness :: [Int] -> [Int]
+findEncryptionWeakness ns 
+
+
 part1 :: XMAS -> Int
 part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
   where
@@ -38,4 +51,7 @@ part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
         ns' = tail ns
 
 part2 :: XMAS -> Int
-part2 (XMAS _ numbers) = length numbers
+part2 (XMAS _ numbers)@xmas = minimum encryptionWeakness + maximum encryptionWeakness
+  where
+    invalidNumber = part1 xmas
+    encryptionWeakness = findEncryptionWeakness invalidNumber numbers
