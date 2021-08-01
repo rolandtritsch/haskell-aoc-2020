@@ -21,14 +21,23 @@ import Prelude
 type Jolt = Int
 
 input :: String -> [Jolt]
-input filename = map read $ lines $ inputRaw filename
+input filename = sort $ jolts ++ [0, (maximum jolts) + 3]
+  where
+    jolts = map read $ lines $ inputRaw filename
+
+diffs :: [Jolt] -> [Int]
+diffs jolts = map (\(a, b) -> b - a) $ zip (init jolts) (tail jolts)
 
 part1 :: [Jolt] -> Int
 part1 jolts = count 1 * count 3
   where
-    count n = length $ filter (== n) diffs
-    diffs = map (\(a, b) -> b - a) $ zip (init jolts') (tail jolts')
-    jolts' = sort $ jolts ++ [0, (maximum jolts) + 3]
+    count n = length $ filter (== n) $ diffs jolts
+
+valid :: [Jolt] -> Bool
+valid jolts = all (<= 3) $ diffs jolts
+
+arrangements :: [Jolt] -> [[Jolt]]
+arrangements jolts = [jolts]
 
 part2 :: [Jolt] -> Int
 part2 jolts = length jolts
