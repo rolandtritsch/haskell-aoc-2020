@@ -53,11 +53,19 @@ run = hspec $ do
               [0, 1, 4, 7, 10, 11, 12, 15, 16, 19, 22],
               [0, 1, 4, 7, 10, 12, 15, 16, 19, 22]
             ]
-      all valid toBeTested `shouldBe` True      
+      all valid toBeTested `shouldBe` True
+
+  describe "combinations" $ do
+    it "testcases" $ do
+      combinations 0 [] `shouldBe` [[]]
+      combinations 0 [1..3] `shouldBe` [[]]
+      combinations 1 [1..3] `shouldBe` [[1],[2],[3],[]]
+      combinations 2 [1..3] `shouldBe` [[1,2],[1,3],[1],[2,3],[2],[3],[]]
+      combinations 3 [1..3] `shouldBe` [[1,2,3],[1,2],[1,3],[1],[2,3],[2],[3],[]]
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 jolts `shouldBe` 13
+      part2 jolts `shouldBe` 8
 
     it "puzzle" $ do
       part2 jolts' `shouldBe` 110

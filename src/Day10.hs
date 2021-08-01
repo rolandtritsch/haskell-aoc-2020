@@ -36,8 +36,20 @@ part1 jolts = count 1 * count 3
 valid :: [Jolt] -> Bool
 valid jolts = all (<= 3) $ diffs jolts
 
+combinations :: Int -> [Jolt] -> [[Jolt]]
+combinations _ [] = [[]]
+combinations 0 _ = [[]]
+combinations n (j:js) = (map (j:) $ combinations (n-1) js) ++ combinations n js
+
 arrangements :: [Jolt] -> [[Jolt]]
-arrangements jolts = [jolts]
+arrangements jolts = filter valid allCombinations
+  where
+    outlet = head jolts
+    device = last jolts
+    adapters = tail $ init jolts
+    allCombinations = map plugItIn $ init $ combinations (length adapters) adapters
+      where
+        plugItIn c = [outlet] ++ c ++ [device]
 
 part2 :: [Jolt] -> Int
-part2 jolts = length jolts
+part2 jolts = length $ arrangements jolts
