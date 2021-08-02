@@ -302,6 +302,11 @@ run = hspec $ do
             ]
       makeTree jolts' 0 `shouldBe` expected
 
+  describe "countPaths" $ do
+    it "testcases" $ do
+      countPaths jolts' (head jolts') (last jolts') 0 `shouldBe` 8
+      countPaths jolts'' (head jolts'') (last jolts'') 0 `shouldBe` 19208
+
   describe "part2" $ do
     it "testcases" $ do
       part2 jolts' `shouldBe` 8

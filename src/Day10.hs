@@ -80,6 +80,18 @@ allPaths path paths (Node current children) = concatMap next children
   where
     next n = allPaths (path ++ [current]) paths n 
 
+countPaths :: [Jolt] -> Jolt -> Jolt -> Int -> Int 
+countPaths jolts jolt device count
+  | jolt > device = error "Hit circuit breaker (this should never happen)"
+  | jolt == device = count + 1
+  | otherwise = foldl countNext count $ nexts jolt 
+      where
+        nexts j = filter next jolts
+          where
+            next j' = elem j' $ map (+j) [1,2,3]
+        countNext a j = countPaths jolts j device a 
+
 part2 :: [Jolt] -> Int
---part2 jolts = length $ arrangements jolts
-part2 jolts = length $ allPaths [] [] $ makeTree jolts 0
+-- part2 jolts = length $ arrangements jolts
+-- part2 jolts = length $ allPaths [] [] $ makeTree jolts 0
+part2 jolts = countPaths jolts (head jolts) (last jolts) 0
