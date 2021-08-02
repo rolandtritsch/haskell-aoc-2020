@@ -31,19 +31,19 @@ import Data.List (sort)
 import Util (inputRaw)
 import Prelude
 
-type Jolt = Int
+type Jolt = Integer
 
-data Node = Node Int [Node] deriving (Eq, Show)
+data Node = Node Integer [Node] deriving (Eq, Show)
 
 input :: String -> [Jolt]
 input filename = sort $ jolts ++ [0, (maximum jolts) + 3]
   where
     jolts = map read $ lines $ inputRaw filename
 
-diffs :: [Jolt] -> [Int]
+diffs :: [Jolt] -> [Integer]
 diffs jolts = map (\(a, b) -> b - a) $ zip (init jolts) (tail jolts)
 
-part1 :: [Jolt] -> Int
+part1 :: [Jolt] -> Integer
 part1 jolts = count 1 * count 3
   where
     count n = length $ filter (== n) $ diffs jolts
@@ -51,7 +51,7 @@ part1 jolts = count 1 * count 3
 valid :: [Jolt] -> Bool
 valid jolts = all (<= 3) $ diffs jolts
 
-combinations :: Int -> [Jolt] -> [[Jolt]]
+combinations :: Integer -> [Jolt] -> [[Jolt]]
 combinations _ [] = [[]]
 combinations 0 _ = [[]]
 combinations n (j:js) = (map (j:) $ combinations (n-1) js) ++ combinations n js
@@ -80,7 +80,7 @@ allPaths path paths (Node current children) = concatMap next children
   where
     next n = allPaths (path ++ [current]) paths n 
 
-countPaths :: [Jolt] -> Jolt -> Jolt -> Int -> Int 
+countPaths :: [Jolt] -> Jolt -> Jolt -> Integer -> Integer 
 countPaths jolts jolt device count
   | jolt > device = error "Hit circuit breaker (this should never happen)"
   | jolt == device = count + 1
@@ -91,7 +91,7 @@ countPaths jolts jolt device count
             next j' = elem j' $ map (+j) [1,2,3]
         countNext a j = countPaths jolts j device a 
 
-part2 :: [Jolt] -> Int
+part2 :: [Jolt] -> Integer
 -- part2 jolts = length $ arrangements jolts
 -- part2 jolts = length $ allPaths [] [] $ makeTree jolts 0
 part2 jolts = countPaths jolts (head jolts) (last jolts) 0
