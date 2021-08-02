@@ -31,19 +31,19 @@ import Data.List (sort)
 import Util (inputRaw)
 import Prelude
 
-type Jolt = Integer
+type Jolt = Int
 
-data Node = Node Integer [Node] deriving (Eq, Show)
+data Node = Node Jolt [Node] deriving (Eq, Show)
 
 input :: String -> [Jolt]
 input filename = sort $ jolts ++ [0, (maximum jolts) + 3]
   where
     jolts = map read $ lines $ inputRaw filename
 
-diffs :: [Jolt] -> [Integer]
+diffs :: [Jolt] -> [Int]
 diffs jolts = map (\(a, b) -> b - a) $ zip (init jolts) (tail jolts)
 
-part1 :: [Jolt] -> Integer
+part1 :: [Jolt] -> Int
 part1 jolts = count 1 * count 3
   where
     count n = length $ filter (== n) $ diffs jolts
@@ -51,7 +51,7 @@ part1 jolts = count 1 * count 3
 valid :: [Jolt] -> Bool
 valid jolts = all (<= 3) $ diffs jolts
 
-combinations :: Integer -> [Jolt] -> [[Jolt]]
+combinations :: Int -> [Jolt] -> [[Jolt]]
 combinations _ [] = [[]]
 combinations 0 _ = [[]]
 combinations n (j:js) = (map (j:) $ combinations (n-1) js) ++ combinations n js
