@@ -11,7 +11,20 @@
 -- two consecutive numbers and just count the number of
 -- 1 and 3 diffs. Multiply the number of 1s and 3s.
 --
--- Part 2 - ???
+-- Part 2 - My first attempt ... failed. The idea was
+-- to build all possible combinations/arrangements and
+-- then just filter for the valid ones. That worked
+-- for the testcases, but failed (miserably) for the
+-- puzzle input (had to kill it after running it for
+-- an hour).
+--
+-- My second attempt goes about it differently. It builds
+-- a tree. It starts with the outlet (0) and then tries
+-- to find all adapters that are [1,2,3] jolts away from
+-- the current adapter until it finds the adapter that
+-- fits into the device.
+--
+-- The solution are all paths in the tree.
 module Day10 where
 
 import Data.List (sort)
@@ -19,6 +32,8 @@ import Util (inputRaw)
 import Prelude
 
 type Jolt = Int
+
+data Node = Node Int [Node] deriving (Eq, Show)
 
 input :: String -> [Jolt]
 input filename = sort $ jolts ++ [0, (maximum jolts) + 3]
@@ -51,5 +66,20 @@ arrangements jolts = filter valid allCombinations
       where
         plugItIn c = [outlet] ++ c ++ [device]
 
+makeTree :: [Jolt] -> Jolt -> Node 
+makeTree jolts jolt = Node jolt $ map nextChildren $ nexts jolt 
+  where
+    nexts c = filter next jolts
+      where
+        next j = elem j $ map (+c) [1,2,3]
+    nextChildren j = makeTree jolts j
+
+allPaths :: [Jolt] -> [[Jolt]] -> Node -> [[Jolt]]
+allPaths path paths (Node current []) = [path ++ [current]] ++ paths
+allPaths path paths (Node current children) = concatMap next children
+  where
+    next n = allPaths (path ++ [current]) paths n 
+
 part2 :: [Jolt] -> Int
-part2 jolts = length $ arrangements jolts
+--part2 jolts = length $ arrangements jolts
+part2 jolts = length $ allPaths [] [] $ makeTree jolts 0
