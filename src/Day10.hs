@@ -26,10 +26,12 @@
 -- the tree.
 --
 -- My third attempt just counts the paths that I can build.
+--
+-- My last attempt was/is based on this thread - https://tedn.ly/s5w
 
 module Day10 where
 
-import Data.List (sort)
+import Data.List (sort, genericLength)
 import Util (inputRaw)
 import Prelude
 
@@ -92,7 +94,16 @@ countPaths jolts jolt device count
           where
             ns = map (+j) [1,2,3]
             next j' = elem j' jolts 
-        countNext a j = countPaths jolts j device a 
+        countNext a j = countPaths jolts j device a
+
+adjacent :: Int -> Int -> [Int] -> [[Int]] -> [[Int]]
+adjacent prev current (r:rs) acc@(a:as)
+  | prev == current = adjacent current r rs ((current : a) : as) 
+  | otherwise = adjacent current r rs ([current] : acc) 
+adjacent prev current [] acc@(a:as)
+  | prev == current = (current : a) : as
+  | otherwise = [current] : acc
+adjacent _ _ _ _ = error "adjacent: Unexpected pattern match"
 
 part2' :: [Jolt] -> Int
 part2' jolts = length $ arrangements jolts
@@ -102,3 +113,13 @@ part2'' jolts = length $ allPaths [] [] $ makeTree jolts 0
 
 part2''' :: [Jolt] -> Integer
 part2''' jolts = countPaths jolts (head jolts) (last jolts) 0
+
+part2 :: [Jolt] -> Integer
+part2 jolts = product possiblePaths
+  where
+    (p:c:rs) = diffs jolts
+    as = adjacent p c rs [[p]]
+    ones = map genericLength $ filter (\(i:_) -> i == 1) as
+    possiblePaths = map f ones
+      where
+        f n = 1 + div (n*(n-1)) 2

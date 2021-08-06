@@ -8,6 +8,7 @@ run = hspec $ do
   let jolts = input "./input/Day10p1.txt"
   let jolts' = input "./input/Day10p1test.txt"
   let jolts'' = input "./input/Day10p1test2.txt"
+  let jolts''' = input "./input/Day10p1test3.txt"
   
   describe "input" $ do
     it "input" $ do
@@ -16,8 +17,8 @@ run = hspec $ do
 
   describe "diffs" $ do
     it "testcases" $ do
-      let expected = [1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 3, 3]
-      diffs jolts' `shouldBe` expected
+      diffs jolts' `shouldBe` [1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 3, 3]
+      diffs jolts''' `shouldBe` [1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 3, 1, 3] 
               
   describe "part1" $ do
     it "testcases" $ do
@@ -307,14 +308,20 @@ run = hspec $ do
       countPaths jolts' (head jolts') (last jolts') 0 `shouldBe` 8
       countPaths jolts'' (head jolts'') (last jolts'') 0 `shouldBe` 19208
 
+  describe "adjacent" $ do
+    it "testcases" $ do
+      let expected = [[3],[1,1,1,1],[3,3],[1],[3],[1,1,1,1],[3,3],[1,1],[3],[1,1,1],[3,3],[1,1,1,1],[3],[1,1,1,1]]
+      let (prev:curr:rest) = diffs jolts''
+      adjacent prev curr rest [[prev]] `shouldBe` expected
+
   describe "part2" $ do
     it "testcases" $ do
       part2' jolts' `shouldBe` 8
-      part2' jolts'' `shouldBe` 19208
+      --part2' jolts'' `shouldBe` 19208
       part2'' jolts' `shouldBe` 8
       part2'' jolts'' `shouldBe` 19208
       part2''' jolts' `shouldBe` 8
       part2''' jolts'' `shouldBe` 19208
 
-    --it "puzzle" $ do
-      --part2 jolts `shouldBe` 1
+    it "puzzle" $ do
+      part2 jolts `shouldBe` 148098383347712
