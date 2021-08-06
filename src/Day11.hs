@@ -75,8 +75,8 @@ makeNeighbors seatsStatus dimensions = M.fromList neighbors
               | row' == rowCount || col' == colCount = 0
               | otherwise = if seatsStatus M.! (row', col') == '#' then 1 else 0
 
-nextSeats :: Seats -> Seats
-nextSeats (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
+nextSeats' :: Seats -> Seats
+nextSeats' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
   where
     (rowCount, colCount) = dimensions
     nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
@@ -87,8 +87,8 @@ nextSeats (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors d
           | otherwise = status M.! position
     nextNeighbors = makeNeighbors nextStatus dimensions
 
-part1 :: Seats -> Int
-part1 seats@(Seats status _ _) = length $ filter (== '#') $ M.elems doneStatus
+seatingArea :: (Seats -> Seats) -> Seats -> [Char]
+seatingArea nextSeats seats@(Seats status _ _) = M.elems doneStatus
   where
     (Seats doneStatus _ _) = go ns (status == statusNs)
       where
@@ -98,5 +98,20 @@ part1 seats@(Seats status _ _) = length $ filter (== '#') $ M.elems doneStatus
           where
             ns'@(Seats statusNs' _ _) = nextSeats seats'
 
+part1 :: Seats -> Int
+part1 seats = length $ filter (== '#') $ seatingArea nextSeats' seats 
+
+nextSeats'' :: Seats -> Seats
+nextSeats'' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
+  where
+    (rowCount, colCount) = dimensions
+    nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
+      where
+        calcStatus position
+          | status M.! position == 'L' && neighbors M.! position == 0 = '#'
+          | status M.! position == '#' && neighbors M.! position >= 4 = 'L'
+          | otherwise = status M.! position
+    nextNeighbors = makeNeighbors nextStatus dimensions
+    
 part2 :: Seats -> Int
-part2 (Seats status _ _) = M.size status
+part2 seats = length $ filter (== '#') $ seatingArea nextSeats'' seats
