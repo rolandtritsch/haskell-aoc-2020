@@ -22,9 +22,11 @@
 -- a tree. It starts with the outlet (0) and then tries
 -- to find all adapters that are [1,2,3] jolts away from
 -- the current adapter until it finds the adapter that
--- fits into the device.
+-- fits into the device. The solution are all paths in
+-- the tree.
 --
--- The solution are all paths in the tree.
+-- My third attempt just counts the paths that I can build.
+
 module Day10 where
 
 import Data.List (sort)
@@ -75,7 +77,7 @@ makeTree jolts jolt = Node jolt $ map nextChildren $ nexts jolt
     nextChildren j = makeTree jolts j
 
 allPaths :: [Jolt] -> [[Jolt]] -> Node -> [[Jolt]]
-allPaths path paths (Node current []) = [path ++ [current]] ++ paths
+allPaths path paths (Node current []) = (path ++ [current]) : paths
 allPaths path paths (Node current children) = concatMap next children
   where
     next n = allPaths (path ++ [current]) paths n 
@@ -86,12 +88,17 @@ countPaths jolts jolt device count
   | jolt == device = count + 1
   | otherwise = foldl countNext count $ nexts jolt 
       where
-        nexts j = filter next jolts
+        nexts j = filter next ns
           where
-            next j' = elem j' $ map (+j) [1,2,3]
+            ns = map (+j) [1,2,3]
+            next j' = elem j' jolts 
         countNext a j = countPaths jolts j device a 
 
-part2 :: [Jolt] -> Integer
--- part2 jolts = length $ arrangements jolts
--- part2 jolts = length $ allPaths [] [] $ makeTree jolts 0
-part2 jolts = countPaths jolts (head jolts) (last jolts) 0
+part2' :: [Jolt] -> Int
+part2' jolts = length $ arrangements jolts
+
+part2'' :: [Jolt] -> Int
+part2'' jolts = length $ allPaths [] [] $ makeTree jolts 0
+
+part2''' :: [Jolt] -> Integer
+part2''' jolts = countPaths jolts (head jolts) (last jolts) 0

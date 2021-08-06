@@ -309,8 +309,12 @@ run = hspec $ do
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 jolts' `shouldBe` 8
-      part2 jolts'' `shouldBe` 19208
+      part2' jolts' `shouldBe` 8
+      part2' jolts'' `shouldBe` 19208
+      part2'' jolts' `shouldBe` 8
+      part2'' jolts'' `shouldBe` 19208
+      part2''' jolts' `shouldBe` 8
+      part2''' jolts'' `shouldBe` 19208
 
-    it "puzzle" $ do
-      part2 jolts `shouldBe` 1
+    --it "puzzle" $ do
+      --part2 jolts `shouldBe` 1
