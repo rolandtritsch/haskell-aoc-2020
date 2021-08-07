@@ -53,8 +53,6 @@ type Status = Char
 
 type SeatsStatus = M.Map Location Status
 
-type SeatsNeighborCount = M.Map Location Int
-
 type Distance = (Int, Status) 
 
 type SeatsNeighborDistanceMap = M.Map Location [Distance]
@@ -62,32 +60,17 @@ type SeatsNeighborDistanceMap = M.Map Location [Distance]
 data Seats = Seats SeatsStatus SeatsNeighborDistanceMap Dimensions
 
 input :: String -> Seats
-input filename = Seats seatsStatus seatsNeighbors (rowCount, colCount)
+input filename = Seats status neighbors dimensions
   where
     contents = lines $ inputRaw filename
-    rowCount = length contents
-    colCount = length $ head contents
+    dimensions@(rowCount, colCount) = (length contents, length $ head contents)
     rows = zip [0 .. (rowCount - 1)] contents
     grid = map (\(row, cols) -> (row, zip [0 .. (colCount - 1)] cols)) rows
-    seatsStatus = M.fromList $ foldl (++) [] $ map (\(row, cols) -> map (\(col, status) -> ((row, col), status)) cols) grid
-    seatsNeighbors = makeNeighbors'' seatsStatus (rowCount, colCount)
+    status = M.fromList $ foldl (++) [] $ map (\(row, cols) -> map (\(col, s) -> ((row, col), s)) cols) grid
+    neighbors = makeNeighbors status dimensions
 
-makeNeighbors :: SeatsStatus -> Dimensions -> SeatsNeighborCount
+makeNeighbors :: SeatsStatus -> Dimensions -> SeatsNeighborDistanceMap
 makeNeighbors status dimensions = M.fromList neighbors
-  where
-    (rowCount, colCount) = dimensions
-    offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-    neighbors = [((row, col), calcCount (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
-      where
-        calcCount (row, col) = sum $ map (\(rowOffset, colOffset) -> lookupCount (row + rowOffset, col + colOffset)) offsets
-          where
-            lookupCount (row', col')
-              | row' == -1 || col' == -1 = 0
-              | row' == rowCount || col' == colCount = 0
-              | otherwise = if status M.! (row', col') == '#' then 1 else 0
-
-makeNeighbors'' :: SeatsStatus -> Dimensions -> SeatsNeighborDistanceMap
-makeNeighbors'' status dimensions = M.fromList neighbors
   where
     (rowCount, colCount) = dimensions
     upOffsets = [(rowDelta, 0) | rowDelta <- [-(rowCount - 1) .. -1]]
@@ -107,19 +90,20 @@ makeNeighbors'' status dimensions = M.fromList neighbors
       [leftDownOffsets] ++
       [rightUpOffsets] ++
       [rightDownOffsets]
-    neighbors = [((row, col), calcDistances 'L' (row, col) ++ calcDistances '#' (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
+    neighbors = [((row, col), calcDistances (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
       where
-        calcDistances seatStatus (row', col') = mapMaybe distance offsets
+        calcDistances (row, col) = mapMaybe distance offsets
           where
-            distance os = foldl measure Nothing os
+            distance = foldl measure Nothing
               where
-                measure Nothing (rd, cd)
-                  | row' + rd >= rowCount || row' + rd < 0 = Nothing 
-                  | col' + cd >= colCount || col' + cd < 0 = Nothing 
-                  | status M.! (row' + rd, col' + cd) == seatStatus = Just(distance' rd cd, seatStatus) 
+                d (rd, cd) = max (abs rd) (abs cd)
+                measure Nothing offset@(rowDelta, colDelta)
+                  | row + rowDelta >= rowCount || row + rowDelta < 0 = Nothing 
+                  | col + colDelta >= colCount || col + colDelta < 0 = Nothing 
+                  | status M.! (row + rowDelta, col + colDelta) == '#' = Just(d offset, '#') 
+                  | status M.! (row + rowDelta, col + colDelta) == 'L' = Just(d offset, 'L') 
                   | otherwise = Nothing
                 measure a _ = a
-                distance' rd' cd' = max (abs rd') (abs cd')
           
 nextSeats' :: Seats -> Seats
 nextSeats' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
@@ -127,12 +111,12 @@ nextSeats' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors 
     (rowCount, colCount) = dimensions
     nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
       where
+        adjacent p = length $ filter (\(d, _) -> d == 1) $ neighbors M.! p
         calcStatus position
           | status M.! position == 'L' && adjacent position == 0 = '#'
           | status M.! position == '#' && adjacent position >= 4 = 'L'
           | otherwise = status M.! position
-        adjacent p = length $ filter (\(d, _) -> d == 1) $ neighbors M.! p
-    nextNeighbors = makeNeighbors'' nextStatus dimensions
+    nextNeighbors = makeNeighbors nextStatus dimensions
 
 seatingArea :: (Seats -> Seats) -> Seats -> [Char]
 seatingArea nextSeats seats@(Seats status _ _) = M.elems doneStatus
@@ -149,17 +133,7 @@ part1 :: Seats -> Int
 part1 seats = length $ filter (== '#') $ seatingArea nextSeats' seats 
 
 nextSeats'' :: Seats -> Seats
-nextSeats'' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
-  where
-    (rowCount, colCount) = dimensions
-    nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
-      where
-        calcStatus position
-          | status M.! position == 'L' && adjacent position == 0 = '#'
-          | status M.! position == '#' && adjacent position >= 4 = 'L'
-          | otherwise = status M.! position
-        adjacent p = length $ filter (\(d, _) -> d == 1) $ neighbors M.! p
-    nextNeighbors = makeNeighbors'' nextStatus dimensions
+nextSeats'' seats = seats
     
 part2 :: Seats -> Int
 part2 seats = length $ filter (== '#') $ seatingArea nextSeats'' seats

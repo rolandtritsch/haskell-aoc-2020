@@ -16,7 +16,7 @@ run = hspec $ do
     it "testcases" $ do
       let (Seats status _ dimensions) = input "./input/Day11p2test.txt"
       let expected = [(3,'#'),(4,'#'),(1,'#'),(5,'#'),(2,'#'),(4,'#'),(3,'#'),(1,'#')]
-      let neighbors = makeNeighbors'' status dimensions
+      let neighbors = makeNeighbors status dimensions
       neighbors M.! (4,3) `shouldBe` expected
 
   describe "part1" $ do
