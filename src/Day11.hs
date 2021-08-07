@@ -111,10 +111,10 @@ nextSeats' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors 
     (rowCount, colCount) = dimensions
     nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
       where
-        adjacent p = length $ filter (\(d, _) -> d == 1) $ neighbors M.! p
+        adjacent s p = length $ filter (\(d', s') -> d' == 1 && s' == s) $ neighbors M.! p
         calcStatus position
-          | status M.! position == 'L' && adjacent position == 0 = '#'
-          | status M.! position == '#' && adjacent position >= 4 = 'L'
+          | status M.! position == 'L' && adjacent '#' position == 0 = '#'
+          | status M.! position == '#' && adjacent '#' position >= 4 = 'L'
           | otherwise = status M.! position
     nextNeighbors = makeNeighbors nextStatus dimensions
 

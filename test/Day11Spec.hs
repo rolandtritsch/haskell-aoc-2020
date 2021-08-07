@@ -32,12 +32,12 @@ run = hspec $ do
       status M.! (3,3) `shouldBe` 'L'
       neighbors''' M.! (3,3) `shouldBe` expected'''
 
-  -- describe "part1" $ do
-  --   it "testcases" $ do
-  --     part1 (input "./input/Day11p1test.txt") `shouldBe` 37
+  describe "part1" $ do
+    it "testcases" $ do
+      part1 (input "./input/Day11p1test.txt") `shouldBe` 37
 
-  --   it "puzzle" $ do
-  --     part1 (input "./input/Day11p1.txt") `shouldBe` 2289
+    it "puzzle" $ do
+      part1 (input "./input/Day11p1.txt") `shouldBe` 2289
 
   -- describe "part2" $ do
   --   it "testcases" $ do
