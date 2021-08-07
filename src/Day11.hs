@@ -133,7 +133,17 @@ part1 :: Seats -> Int
 part1 seats = length $ filter (== '#') $ seatingArea nextSeats' seats 
 
 nextSeats'' :: Seats -> Seats
-nextSeats'' seats = seats
-    
+nextSeats'' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
+  where
+    (rowCount, colCount) = dimensions
+    nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
+      where
+        visible s p = length $ filter (\(_, s') -> s' == s) $ neighbors M.! p
+        calcStatus position
+          | status M.! position == 'L' && visible '#' position == 0 = '#'
+          | status M.! position == '#' && visible '#' position >= 5 = 'L'
+          | otherwise = status M.! position
+    nextNeighbors = makeNeighbors nextStatus dimensions
+
 part2 :: Seats -> Int
 part2 seats = length $ filter (== '#') $ seatingArea nextSeats'' seats
