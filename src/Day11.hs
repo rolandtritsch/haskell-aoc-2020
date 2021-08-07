@@ -73,14 +73,14 @@ makeNeighbors :: SeatsStatus -> Dimensions -> SeatsNeighborDistanceMap
 makeNeighbors status dimensions = M.fromList neighbors
   where
     (rowCount, colCount) = dimensions
-    upOffsets = [(rowDelta, 0) | rowDelta <- [-(rowCount - 1) .. -1]]
+    upOffsets = [(rowDelta, 0) | rowDelta <- [-1, -2 .. (rowCount - 1)]]
     downOffsets = [(rowDelta, 0) | rowDelta <- [1 .. (rowCount - 1)]]
-    leftOffsets = [(0, colDelta) | colDelta <- [-(colCount - 1) .. -1]]
-    rightOffsets = [(0, colDelta) | colDelta <- [1 .. (colCount - 1)]]
-    leftUpOffsets = [(rowDelta, colDelta) | rowDelta <- [-(rowCount - 1) .. -1], colDelta <- [-(colCount - 1) .. -1]]
-    leftDownOffsets = [(rowDelta, colDelta) | rowDelta <- [-(rowCount - 1) .. -1], colDelta <- [1 .. (colCount - 1)]]
-    rightUpOffsets = [(rowDelta, colDelta) | rowDelta <- [1 .. (rowCount - 1)], colDelta <- [-(colCount - 1) .. -1]]
-    rightDownOffsets = [(rowDelta, colDelta) | rowDelta <- [1 .. (rowCount - 1)], colDelta <- [1 .. (colCount - 1)]]
+    leftOffsets = [(0, colDelta) | colDelta <- [-1, -2 .. -(colCount - 1)]]
+    rightOffsets = [(0, colDelta) | colDelta <- [0 .. (colCount - 1)]]
+    leftUpOffsets = [(rowDelta, colDelta) | rowDelta <- [0, -1 .. -(rowCount - 1)], colDelta <- [0, -1 .. -(colCount - 1)]]
+    leftDownOffsets = [(rowDelta, colDelta) | rowDelta <- [0, -1 .. -(rowCount - 1)], colDelta <- [0 .. (colCount - 1)]]
+    rightUpOffsets = [(rowDelta, colDelta) | rowDelta <- [0 .. (rowCount - 1)], colDelta <- [0, -1 .. -(colCount - 1)]]
+    rightDownOffsets = [(rowDelta, colDelta) | rowDelta <- [0 .. (rowCount - 1)], colDelta <- [0 .. (colCount - 1)]]
     offsets =
       [upOffsets] ++
       [downOffsets] ++
