@@ -20,7 +20,8 @@ run = hspec $ do
       
       let (Seats _ neighbors' _) = input "./input/Day11p2test.txt"
       let expected' = [(3,'#'),(4,'#'),(1,'#'),(5,'#'),(2,'#'),(4,'#'),(3,'#'),(1,'#')]
-      neighbors' M.! (4,3) `shouldBe` expected'
+      let result = neighbors' M.! (4,3)
+      result `shouldBe` expected'
 
       let (Seats _ neighbors'' _) = input "./input/Day11p2test2.txt"
       let expected'' = [(2,'L')]
