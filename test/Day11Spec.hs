@@ -1,5 +1,7 @@
 module Day11Spec where
 
+import qualified Data.Map as M
+
 import Day11
 import Test.Hspec
 
@@ -9,6 +11,13 @@ run = hspec $ do
     it "input" $ do
       let (Seats _ _ dimensions) = input "./input/Day11p1test.txt"
       dimensions `shouldBe` (10,10)
+
+  describe "makeNeighbors" $ do
+    it "testcases" $ do
+      let (Seats status _ dimensions) = input "./input/Day11p2test.txt"
+      let expected = [(3,'#'),(4,'#'),(1,'#'),(5,'#'),(2,'#'),(4,'#'),(3,'#'),(1,'#')]
+      let neighbors = makeNeighbors'' status dimensions
+      neighbors M.! (4,3) `shouldBe` expected
 
   describe "part1" $ do
     it "testcases" $ do

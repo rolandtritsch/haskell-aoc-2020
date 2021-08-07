@@ -744,6 +744,7 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
+    - containers
 
   haskell-aoc-test-day12:
     main: Day12Spec.hs
