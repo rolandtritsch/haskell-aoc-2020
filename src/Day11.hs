@@ -105,21 +105,8 @@ makeNeighbors status dimensions = M.fromList neighbors
                   | otherwise = Nothing
                 measure a _ = a
           
-nextSeats' :: Seats -> Seats
-nextSeats' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
-  where
-    (rowCount, colCount) = dimensions
-    nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
-      where
-        adjacent s p = length $ filter (\(d', s') -> d' == 1 && s' == s) $ neighbors M.! p
-        calcStatus position
-          | status M.! position == 'L' && adjacent '#' position == 0 = '#'
-          | status M.! position == '#' && adjacent '#' position >= 4 = 'L'
-          | otherwise = status M.! position
-    nextNeighbors = makeNeighbors nextStatus dimensions
-
-seatingArea :: (Seats -> Seats) -> Seats -> [Char]
-seatingArea nextSeats seats@(Seats status _ _) = M.elems doneStatus
+seatingArea :: (Seats -> Location -> Status) -> Seats -> [Char]
+seatingArea calcStatus seats@(Seats status _ _) = M.elems doneStatus
   where
     (Seats doneStatus _ _) = go ns (status == statusNs)
       where
@@ -128,22 +115,33 @@ seatingArea nextSeats seats@(Seats status _ _) = M.elems doneStatus
         go seats'@(Seats status' _ _) False = go ns' (status' == statusNs')
           where
             ns'@(Seats statusNs' _ _) = nextSeats seats'
+    nextSeats seats''@(Seats _ _ dimensions) = Seats nextStatus nextNeighbors dimensions
+      where
+        (rowCount, colCount) = dimensions
+        nextStatus = M.fromList $ [((row, col), calcStatus seats'' (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
+        nextNeighbors = makeNeighbors nextStatus dimensions
+
+calcStatus' :: Seats -> Location -> Status
+calcStatus' (Seats status neighbors _) position
+  | status M.! position == 'L' && adjacent '#' position == 0 = '#'
+  | status M.! position == '#' && adjacent '#' position >= 4 = 'L'
+  | otherwise = status M.! position
+  where
+    adjacent s p = length $ filter (\(d', s') -> d' == 1 && s' == s) $ neighbors M.! p
+
+solve :: (Seats -> Location -> Status) -> Seats -> Int
+solve calcStatus seats = length $ filter (== '#') $ seatingArea calcStatus seats
 
 part1 :: Seats -> Int
-part1 seats = length $ filter (== '#') $ seatingArea nextSeats' seats 
+part1 seats = solve calcStatus' seats 
 
-nextSeats'' :: Seats -> Seats
-nextSeats'' (Seats status neighbors dimensions) = Seats nextStatus nextNeighbors dimensions
+calcStatus'' :: Seats -> Location -> Status
+calcStatus'' (Seats status neighbors _) position
+  | status M.! position == 'L' && visible '#' position == 0 = '#'
+  | status M.! position == '#' && visible '#' position >= 5 = 'L'
+  | otherwise = status M.! position
   where
-    (rowCount, colCount) = dimensions
-    nextStatus = M.fromList $ [((row, col), calcStatus (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
-      where
-        visible s p = length $ filter (\(_, s') -> s' == s) $ neighbors M.! p
-        calcStatus position
-          | status M.! position == 'L' && visible '#' position == 0 = '#'
-          | status M.! position == '#' && visible '#' position >= 5 = 'L'
-          | otherwise = status M.! position
-    nextNeighbors = makeNeighbors nextStatus dimensions
-
+    visible s p = length $ filter (\(_, s') -> s' == s) $ neighbors M.! p
+    
 part2 :: Seats -> Int
-part2 seats = length $ filter (== '#') $ seatingArea nextSeats'' seats
+part2 seats = solve calcStatus'' seats 
