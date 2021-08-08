@@ -18,7 +18,7 @@ run = hspec $ do
 
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day12p1test.txt") `shouldBe` 5
+      part2 (input "./input/Day12p1test.txt") `shouldBe` 286
 
     it "puzzle" $ do
-      part2 (input "./input/Day12p1.txt") `shouldBe` 759
+      part2 (input "./input/Day12p1.txt") `shouldBe` 0

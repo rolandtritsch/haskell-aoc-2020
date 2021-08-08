@@ -14,7 +14,9 @@
 -- a position of (0, 0) and when it is done we just need to calc the
 -- manhatten distance from the final position.
 --
--- Part 2 - ???
+-- Part 2 - Almost the same as part 1, but ... taking the waypoint logic
+-- into consideration.
+
 module Day12 where
 
 import Util (inputRaw)
@@ -25,6 +27,11 @@ type Argument = Int
 type Position = (Int, Int)
 
 data Direction = North | South | East | West
+
+type Waypoint = (Int, Int)
+
+type State = (Position, Direction)
+type State' = (Position, Direction, Waypoint)
 
 data Operation = North' | South' | East' | West' | Left' | Right' | Forward'
   deriving (Eq, Show)
@@ -56,7 +63,7 @@ manhatten origin destination = (abs xDiff) + (abs yDiff)
     xDiff = xOrigin + xDestination
     yDiff = yOrigin + yDestination
 
-execute :: (Position, Direction) -> Instruction -> (Position, Direction)
+execute :: State -> Instruction -> State
 execute ((x, y), North) (Instruction Forward' offset) = ((x + offset, y), North)
 execute ((x, y), South) (Instruction Forward' offset) = ((x - offset, y), South)
 execute ((x, y), East) (Instruction Forward' offset) = ((x, y + offset), East)
@@ -89,7 +96,21 @@ execute ((x, y), West) (Instruction Left' 270) = ((x, y), North)
 execute ((x, y), West) (Instruction Right' 90) = ((x, y), North)
 execute ((x, y), West) (Instruction Right' 180) = ((x, y), East)
 execute ((x, y), West) (Instruction Right' 270) = ((x, y), South)
-execute _ _ = error "Cannot execute"
+execute _ _ = error "execute: Unexpected pattern match"
+
+execute' :: State' -> Instruction -> State'
+--execute' ((x, y), d, w@(wx, wy)) (Instruction Forward' offset) = ((x + wx * offset, y + wy + offset), d, w)
+execute' (p, d, (wx, wy)) (Instruction North' offset) = (p, d, (wx + offset, wy))
+execute' (p, d, (wx, wy)) (Instruction South' offset) = (p, d, (wx - offset, wy))
+execute' (p, d, (wx, wy)) (Instruction East' offset) = (p, d, (wx, wy + offset))
+execute' (p, d, (wx, wy)) (Instruction West' offset) = (p, d, (wx, wy - offset))
+execute' (p, d, (wx, wy)) (Instruction Left' 90) = (p, d, (-wy, wx))
+execute' (p, d, (wx, wy)) (Instruction Left' 180) = (p, d, (-wx, -wy))
+execute' (p, d, (wx, wy)) (Instruction Left' 270) = (p, d, (wy, -wx))
+execute' (p, d, (wx, wy)) (Instruction Right' 90) = (p, d, (wy, -wx))
+execute' (p, d, (wx, wy)) (Instruction Right' 180) = (p, d, (-wx, -wy))
+execute' (p, d, (wx, wy)) (Instruction Right' 270) = (p, d, (-wy, wx))
+execute' _ _ _ = error "execute': Unexpected pattern match"
 
 part1 :: [Instruction] -> Int
 part1 instructions = manhatten origin final
@@ -98,4 +119,7 @@ part1 instructions = manhatten origin final
     (final, _) = foldl execute (origin, East) instructions
 
 part2 :: [Instruction] -> Int
-part2 instructions = length instructions
+part2 instructions = manhatten origin final
+  where
+    origin = (0, 0)
+    (final, _, _) = foldl execute' (origin, East, (-10, 1)) instructions
