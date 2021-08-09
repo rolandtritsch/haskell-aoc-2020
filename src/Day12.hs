@@ -27,11 +27,12 @@ type Argument = Int
 type Position = (Int, Int)
 
 data Direction = North | South | East | West
+  deriving (Eq, Show)
 
 type Waypoint = (Int, Int)
 
 type State = (Position, Direction)
-type State' = (Position, Direction, Waypoint)
+type State' = (Position, Waypoint)
 
 data Operation = North' | South' | East' | West' | Left' | Right' | Forward'
   deriving (Eq, Show)
@@ -98,28 +99,29 @@ execute ((x, y), West) (Instruction Right' 180) = ((x, y), East)
 execute ((x, y), West) (Instruction Right' 270) = ((x, y), South)
 execute _ _ = error "execute: Unexpected pattern match"
 
-execute' :: State' -> Instruction -> State'
---execute' ((x, y), d, w@(wx, wy)) (Instruction Forward' offset) = ((x + wx * offset, y + wy + offset), d, w)
-execute' (p, d, (wx, wy)) (Instruction North' offset) = (p, d, (wx + offset, wy))
-execute' (p, d, (wx, wy)) (Instruction South' offset) = (p, d, (wx - offset, wy))
-execute' (p, d, (wx, wy)) (Instruction East' offset) = (p, d, (wx, wy + offset))
-execute' (p, d, (wx, wy)) (Instruction West' offset) = (p, d, (wx, wy - offset))
-execute' (p, d, (wx, wy)) (Instruction Left' 90) = (p, d, (-wy, wx))
-execute' (p, d, (wx, wy)) (Instruction Left' 180) = (p, d, (-wx, -wy))
-execute' (p, d, (wx, wy)) (Instruction Left' 270) = (p, d, (wy, -wx))
-execute' (p, d, (wx, wy)) (Instruction Right' 90) = (p, d, (wy, -wx))
-execute' (p, d, (wx, wy)) (Instruction Right' 180) = (p, d, (-wx, -wy))
-execute' (p, d, (wx, wy)) (Instruction Right' 270) = (p, d, (-wy, wx))
-execute' _ _ _ = error "execute': Unexpected pattern match"
-
 part1 :: [Instruction] -> Int
 part1 instructions = manhatten origin final
   where
     origin = (0, 0)
     (final, _) = foldl execute (origin, East) instructions
 
+execute' :: State' -> Instruction -> State'
+execute' ((x, y), w@(wx, wy)) (Instruction Forward' offset) = ((x + wx * offset, y + wy * offset), w)
+execute' (p, (wx, wy)) (Instruction North' offset) = (p, (wx, wy + offset))
+execute' (p, (wx, wy)) (Instruction South' offset) = (p, (wx, wy - offset))
+execute' (p, (wx, wy)) (Instruction East' offset) = (p, (wx + offset, wy))
+execute' (p, (wx, wy)) (Instruction West' offset) = (p, (wx - offset, wy))
+execute' (p, (wx, wy)) (Instruction Left' 90) = (p, (-wy, wx))
+execute' (p, (wx, wy)) (Instruction Left' 180) = (p, (-wx, -wy))
+execute' (p, (wx, wy)) (Instruction Left' 270) = (p, (wy, -wx))
+execute' (p, (wx, wy)) (Instruction Right' 90) = (p, (wy, -wx))
+execute' (p, (wx, wy)) (Instruction Right' 180) = (p, (-wx, -wy))
+execute' (p, (wx, wy)) (Instruction Right' 270) = (p, (-wy, wx))
+execute' _ _ = error "execute': Unexpected pattern match"
+
 part2 :: [Instruction] -> Int
 part2 instructions = manhatten origin final
   where
     origin = (0, 0)
-    (final, _, _) = foldl execute' (origin, East, (-10, 1)) instructions
+    waypoint = (10, 1)
+    (final, _) = foldl execute' (origin, waypoint) instructions
