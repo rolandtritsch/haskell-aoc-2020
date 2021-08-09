@@ -8,6 +8,7 @@
 -- Part 1 - After you have the data, solving the puzzle becomes easy.
 --
 -- Part 2 - Implemented xor for that.
+
 module Day02 where
 
 import Data.List.Split (splitOn)

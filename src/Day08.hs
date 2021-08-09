@@ -11,11 +11,12 @@
 --
 -- Part 2 - Need to find a set of instructions that will reach then
 -- end of the program (the instruction after the last one). First
--- I am building all possible (better/fixed instruction sets. Then
+-- I am building all possible (better/fixed) instruction sets. Then
 -- I run them. They will either terminate with LOOP(-detected) or
 -- NORMAL (and also return the accumulator). I will then find the
 -- first NORMAL termination and return the accumulator of that
 -- termination.
+
 module Day08 where
 
 import Data.List (find, nub)

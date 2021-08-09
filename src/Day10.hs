@@ -27,7 +27,7 @@
 --
 -- My third attempt just counts the paths that I can build.
 --
--- My last attempt was/is based on this thread - https://tedn.ly/s5w
+-- My last attempt was/is based on this thread - https://tedn.ly/s5w.
 
 module Day10 where
 

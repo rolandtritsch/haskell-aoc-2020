@@ -5,7 +5,7 @@
 --
 -- General - This is a reading problem. Reading it fast once,
 -- you start to think about lazy list evaluations. Reading it
--- a second time slow(er) you realize that there is an easy
+-- a second time slow(er), you realize that there is an easy
 -- way to calculate the solution, because the minutes you
 -- need to wait is the remainder of the departure time by
 -- the bus id.
@@ -13,6 +13,7 @@
 -- Part 1 - Find the minimum and calculate the solution.
 --
 -- Part 2 - ???
+
 module Day13 where
 
 import Data.List.Split (splitOn)

@@ -9,7 +9,9 @@
 --
 -- Part 1 - Calc the pairs recursively.
 --
--- Part 2 - ???
+-- Part 2 - Use part1 to find the invalidNumber and then (recursively)
+-- push a window over the input to find the encryption weakness.
+
 module Day09 where
 
 import Util (inputRaw)

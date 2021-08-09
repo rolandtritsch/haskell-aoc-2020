@@ -10,6 +10,7 @@
 --
 -- Part 2 - Just use contains (recursively) to count how many bag colors can
 -- eventually contain at least one shiny gold bag.
+
 module Day07 where
 
 import Data.List (nub)

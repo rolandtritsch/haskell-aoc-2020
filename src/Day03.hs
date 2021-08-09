@@ -20,6 +20,7 @@
 -- Part 1 - Doing the above.
 --
 -- Part 2 - Using part1 to do it for all given moves.
+
 module Day03 where
 
 import Util (inputRaw)

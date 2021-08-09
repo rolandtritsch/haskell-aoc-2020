@@ -10,6 +10,7 @@
 --
 -- Part 2 - Counting number of questions per group where everybody (all) said yes.
 -- Sum up the questions.
+
 module Day06 where
 
 import Data.List (group, intercalate, nub, sort)

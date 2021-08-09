@@ -15,6 +15,7 @@
 -- Part 1 - Scan the file and do the check.
 --
 -- Part 2 - Scan the file and do the checks (using regexes).
+
 module Day04 where
 
 import Data.List (intercalate)
