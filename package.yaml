@@ -24,6 +24,7 @@ library:
   - -O2
   - -Wall -Werror
   dependencies:
+  - algebra
   - MissingH
   - containers
   - regex-base
