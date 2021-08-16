@@ -23,13 +23,13 @@ import qualified Day09.Part2 as D09P2
 import qualified Day10.Part1 as D10P1
 import qualified Day10.Part2 as D10P2
 import qualified Day11.Part1 as D11P1
--- import qualified Day11.Part2 as D11P2
+import qualified Day11.Part2 as D11P2
 import qualified Day12.Part1 as D12P1
--- import qualified Day12.Part2 as D12P2
+import qualified Day12.Part2 as D12P2
 import qualified Day13.Part1 as D13P1
--- import qualified Day13.Part2 as D13P2
+import qualified Day13.Part2 as D13P2
 import qualified Day14.Part1 as D14P1
--- import qualified Day14.Part2 as D14P2
+import qualified Day14.Part2 as D14P2
 import qualified Day15.Part1 as D15P1
 -- import qualified Day15.Part2 as D15P2
 import qualified Day16.Part1 as D16P1
@@ -78,13 +78,13 @@ main = do
   D10P1.main
   D10P2.main
   D11P1.main
---   D11P2.main
+  D11P2.main
   D12P1.main
---   D12P2.main
+  D12P2.main
   D13P1.main
---   D13P2.main
+  D13P2.main
   D14P1.main
---   D14P2.main
+  D14P2.main
   D15P1.main
 --   D15P2.main
   D16P1.main
