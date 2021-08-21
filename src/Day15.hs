@@ -19,29 +19,33 @@ import qualified Data.Map as M
 import Util (inputRaw)
 import Prelude
 
-type Spoken = M.Map Int [Int]
+type Number = Int
 
-input :: String -> [Int]
+type Turn = Int
+
+type Spoken = M.Map Number [Turn]
+
+input :: String -> [Number]
 input filename = map read $ lines $ inputRaw filename
 
-speak :: Int -> Int -> Spoken -> Spoken
+speak :: Number -> Turn -> Spoken -> Spoken
 speak number turn spoken = M.insertWith (++) number [turn] spoken
 
-whatToSay :: Int -> Int -> Spoken -> Int
+whatToSay :: Number -> Turn -> Spoken -> Number
 whatToSay number turn spoken
   | M.notMember number spoken = 0
   | otherwise = turn - lastTime
   where
     lastTime = head $ spoken M.! number
 
-nextTurn :: Int -> Spoken -> Int -> Int -> [Int]
+nextTurn :: Number -> Spoken -> Turn -> Turn -> [Number]
 nextTurn number _ _ 0 = [number]
 nextTurn number spoken turn turned = nextTurn nextNumber nextSpoken (turn + 1) (turned - 1) ++ [number]
   where
     nextNumber = whatToSay number turn spoken
     nextSpoken = speak number turn spoken
 
-part1 :: [Int] -> Int
+part1 :: [Number] -> Number
 part1 initial = head $ nextTurn initialNumber initialSpoken initialTurn initialTurned
   where
     initialSpoken = M.fromList $ zip initial [[t] | t <- [1 .. (length initial)]]
@@ -49,5 +53,5 @@ part1 initial = head $ nextTurn initialNumber initialSpoken initialTurn initialT
     initialTurn = length initial + 1
     initialTurned = 2020 - length initial - 1
 
-part2 :: [Int] -> Int
+part2 :: [Number] -> Number
 part2 initial = length initial
