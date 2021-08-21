@@ -12,7 +12,10 @@
 --
 -- Part 1 - Take 2020 turns and return the last number spoken.
 --
--- Part 2 - ???
+-- Part 2 - Take 30000000 turns and return the last number spoken.
+-- Big surprise (or not): The implementation for part1 is slow, but ...
+-- ... not so slow that it is not returing a within 2 minutes.
+
 module Day15 where
 
 import qualified Data.Map as M
@@ -45,13 +48,16 @@ nextTurn number spoken turn turned = nextTurn nextNumber nextSpoken (turn + 1) (
     nextNumber = whatToSay number turn spoken
     nextSpoken = speak number turn spoken
 
-part1 :: [Number] -> Number
-part1 initial = head $ nextTurn initialNumber initialSpoken initialTurn initialTurned
+solve :: Turn -> [Number] -> Number
+solve turns numbers = head $ nextTurn initialNumber initialSpoken initialTurn initialTurned
   where
-    initialSpoken = M.fromList $ zip initial [[t] | t <- [1 .. (length initial)]]
-    initialNumber = whatToSay (last initial) (length initial) initialSpoken
-    initialTurn = length initial + 1
-    initialTurned = 2020 - length initial - 1
+    initialSpoken = M.fromList $ zip numbers [[t] | t <- [1 .. (length numbers)]]
+    initialNumber = whatToSay (last numbers) (length numbers) initialSpoken
+    initialTurn = length numbers + 1
+    initialTurned = turns - length numbers - 1
+
+part1 :: [Number] -> Number
+part1 = solve 2020
 
 part2 :: [Number] -> Number
-part2 initial = length initial
+part2 = solve 30000000
