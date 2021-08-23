@@ -25,7 +25,7 @@ run = hspec $ do
 
   describe "invalidFields" $ do
     it "testcases" $ do
-      invalidFields (input "./input/Day16p1test.txt") `shouldBe` [4,12,55]
+      invalidFields (input "./input/Day16p1test.txt") `shouldBe` [4,55,12]
 
   describe "validTickets" $ do
     it "testcases" $ do

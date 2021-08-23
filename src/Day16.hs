@@ -13,10 +13,12 @@
 -- Part 2 - ???
 module Day16 where
 
-import Data.List (nub, sort)
+import Data.List (nub)
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
+
 import Util (inputRaw)
+
 import Prelude
 
 type Description = String
@@ -41,7 +43,7 @@ input filename = Notes {ranges = ranges', myTicket = myTicket', nearbyTickets = 
     nearbyTickets' = map processLine $ lines $ inputRaw (filename ++ "-nearby")
     ranges' = foldl processRange M.empty $ lines $ inputRaw (filename ++ "-ranges")
       where
-        processRange a r = M.insert desc ([from .. to] ++ [from' .. to']) a
+        processRange rs r = M.insert desc ([from .. to] ++ [from' .. to']) rs
           where
             desc = (splitOn ":" r) !! 0
             tokens = splitOn " " ((splitOn ":" r) !! 1)
@@ -52,8 +54,8 @@ input filename = Notes {ranges = ranges', myTicket = myTicket', nearbyTickets = 
 invalidFields :: Notes -> [Field] 
 invalidFields notes = filter (\e -> notElem e valid) nearby
   where
-    valid = nub $ sort $ concat $ M.elems (ranges notes)
-    nearby = sort $ foldl (++) [] (nearbyTickets notes)
+    valid = nub $ concat $ M.elems $ ranges notes
+    nearby = concat $ nearbyTickets notes
 
 -- | returns valid tickets
 validTickets :: [Field] -> [[Field]] -> [[Field]]
