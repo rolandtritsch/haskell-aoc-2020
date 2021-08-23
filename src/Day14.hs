@@ -32,13 +32,12 @@
 -- to implement the first masking operation (applyMask).
 --
 -- Not elegant, but it works.
-
 module Day14 where
 
-import Numeric (showIntAtBase)
-import Data.Char (intToDigit)
 import Data.Bits ((.&.), (.|.))
+import Data.Char (intToDigit)
 import qualified Data.Map as M
+import Numeric (showIntAtBase)
 import Util (inputRaw)
 import Prelude
 
@@ -101,7 +100,7 @@ execute program (Write addr value) =
 part1 :: [Operation] -> Int
 part1 operations = sum $ M.elems (memory done)
   where
-    program = Program {counter = 0, mask = (0,0), memMask = [], memory = M.empty}
+    program = Program {counter = 0, mask = (0, 0), memMask = [], memory = M.empty}
     done = foldl execute program operations
 
 dec2bin :: Int -> String
@@ -116,9 +115,9 @@ applyMask :: String -> String -> String
 applyMask addr' mask' = go addr'' mask''
   where
     l = max (length addr') (length mask')
-    addr'' = prepend '0' l addr' 
+    addr'' = prepend '0' l addr'
     mask'' = prepend '0' l mask'
-    go (a:as) (m:ms)
+    go (a : as) (m : ms)
       | m == 'X' = 'X' : go as ms
       | m == '1' = '1' : go as ms
       | otherwise = a : go as ms
@@ -126,33 +125,33 @@ applyMask addr' mask' = go addr'' mask''
 
 buildMasks :: String -> [String]
 buildMasks [] = [""]
-buildMasks (d:ds)
-    | d == 'X' = map ('0':) (buildMasks ds) ++ map ('1':) (buildMasks ds)
-    | otherwise = map (d:) (buildMasks ds)
+buildMasks (d : ds)
+  | d == 'X' = map ('0' :) (buildMasks ds) ++ map ('1' :) (buildMasks ds)
+  | otherwise = map (d :) (buildMasks ds)
 
 execute' :: Program -> Operation -> Program
 execute' program (Mask _ _ memMask') =
   Program
     { counter = counter program + 1,
-      mask = (0,0),
+      mask = (0, 0),
       memMask = memMask',
       memory = memory program
     }
 execute' program (Write addr value) =
   Program
     { counter = counter program + 1,
-      mask = (0,0),
+      mask = (0, 0),
       memMask = memMask program,
       memory = updateMemory addr value (memory program) (memMask program)
     }
   where
-    updateMemory addr' value' memory' memMask'  = foldl update memory' addresses
+    updateMemory addr' value' memory' memMask' = foldl update memory' addresses
       where
         addresses = map bin2dec $ buildMasks $ applyMask (dec2bin addr') memMask'
-        update m a = M.insert a value' m  
+        update m a = M.insert a value' m
 
 part2 :: [Operation] -> Int
 part2 operations = sum $ M.elems (memory done)
   where
-    program = Program {counter = 0, mask = (0,0), memMask = [], memory = M.empty}
+    program = Program {counter = 0, mask = (0, 0), memMask = [], memory = M.empty}
     done = foldl execute' program operations
