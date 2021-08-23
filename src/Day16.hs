@@ -15,6 +15,7 @@ module Day16 where
 
 import Data.List (nub, sort)
 import Data.List.Split (splitOn)
+import qualified Data.Map as M
 import Util (inputRaw)
 import Prelude
 
@@ -22,11 +23,10 @@ type Description = String
 
 type Field = Int
 
-data Range = Range Description [Field]
-  deriving (Eq, Show)
+type Ranges = M.Map Description [Field]
 
 data Notes = Notes
-  { ranges :: [Range],
+  { ranges :: Ranges,
     myTicket :: [Field],
     nearbyTickets :: [[Field]]
   }
@@ -39,9 +39,9 @@ input filename = Notes {ranges = ranges', myTicket = myTicket', nearbyTickets = 
     processLine l = map read $ splitOn "," l
     myTicket' = processLine $ head $ lines $ inputRaw (filename ++ "-your")
     nearbyTickets' = map processLine $ lines $ inputRaw (filename ++ "-nearby")
-    ranges' = map processRange $ lines $ inputRaw (filename ++ "-ranges")
+    ranges' = foldl processRange M.empty $ lines $ inputRaw (filename ++ "-ranges")
       where
-        processRange r = Range desc ([from .. to] ++ [from' .. to'])
+        processRange a r = M.insert desc ([from .. to] ++ [from' .. to']) a
           where
             desc = (splitOn ":" r) !! 0
             tokens = splitOn " " ((splitOn ":" r) !! 1)
@@ -52,7 +52,7 @@ input filename = Notes {ranges = ranges', myTicket = myTicket', nearbyTickets = 
 invalidFields :: Notes -> [Field] 
 invalidFields notes = filter (\e -> notElem e valid) nearby
   where
-    valid = nub $ sort $ foldl (++) [] $ map (\(Range _ r) -> r) (ranges notes)
+    valid = nub $ sort $ concat $ M.elems (ranges notes)
     nearby = sort $ foldl (++) [] (nearbyTickets notes)
 
 -- | returns valid tickets
