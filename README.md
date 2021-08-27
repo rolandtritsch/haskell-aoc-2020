@@ -12,4 +12,4 @@ To make this work you need to ...
 * run `stack exec haskell-aoc-exe`
 * run `stack test haskell-aoc:haskell-aoc-test-day00 --file-watch` to test a specific day
 
-You can (re)generate the [documentation](https://github.com/rolandtritsch/haskell-aoc-2020/blob/trunk/doc/index.html?raw=true) (with some explanations on the solutions) with `stack exec -- haddock src/*.hs --html --odir ./doc`.
+You can (re)generate the [documentation](http://tedn.life/haskell-aoc-2020) (with some explanations on the solutions) on the `gh-pages` branch (after rebasing it onto `trunk`) with `stack exec -- haddock src/*.hs --html --odir ./doc`.
