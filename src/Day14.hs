@@ -45,9 +45,11 @@ type Address = Int
 
 type Value = Int
 
+-- | The operations.
 data Operation = Mask Int Int String | Write Int Int
   deriving (Eq, Show)
 
+-- | The current program state.
 data Program = Program
   { counter :: Int,
     mask :: (Int, Int),
@@ -56,14 +58,17 @@ data Program = Program
   }
 
 -- http://pleac.sourceforge.net/pleac_haskell/numbers.html#AEN82
+-- | Returns the int for the binary string
 bin2dec :: String -> Int
 bin2dec = foldr (\c s -> s * 2 + c) 0 . reverse . map c2i
   where
     c2i c = if c == '0' then 0 else 1
 
+-- | Take a slice out of a/the list.
 sliceTo :: forall a. Int -> Int -> [a] -> [a]
 sliceTo from to as = take (to - from + 1) (drop from as)
 
+-- | Read the input file.
 input :: String -> [Operation]
 input filename = map (\l -> processLine (words l)) contents
   where
@@ -78,6 +83,7 @@ input filename = map (\l -> processLine (words l)) contents
         address = read $ sliceTo 4 ((length (tokens !! 0)) - 2) (tokens !! 0)
         value = read (tokens !! 2)
 
+-- | Execute the operation and return the next program state (part1).
 execute :: Program -> Operation -> Program
 execute program (Mask setMask unsetMask _) =
   Program
@@ -97,20 +103,24 @@ execute program (Write addr value) =
     (setMask, unsetMask) = mask program
     maskedValue = unsetMask .&. (value .|. setMask)
 
+-- | Solve part1.
 part1 :: [Operation] -> Int
 part1 operations = sum $ M.elems (memory done)
   where
     program = Program {counter = 0, mask = (0, 0), memMask = [], memory = M.empty}
     done = foldl execute program operations
 
+-- | Return the binary string for the given int.
 dec2bin :: Int -> String
 dec2bin n = showIntAtBase 2 intToDigit n ""
 
+-- | Prepend the given char before the string.
 prepend :: Char -> Int -> String -> String
 prepend c l s
   | l == length s = s
   | otherwise = prepend c l (c : s)
 
+-- | Apply the mask to the given binary string.
 applyMask :: String -> String -> String
 applyMask addr' mask' = go addr'' mask''
   where
@@ -123,12 +133,14 @@ applyMask addr' mask' = go addr'' mask''
       | otherwise = a : go as ms
     go _ _ = []
 
+-- | Build all possible masks from mask template.
 buildMasks :: String -> [String]
 buildMasks [] = [""]
 buildMasks (d : ds)
   | d == 'X' = map ('0' :) (buildMasks ds) ++ map ('1' :) (buildMasks ds)
   | otherwise = map (d :) (buildMasks ds)
 
+-- | Execute the operation and return the next program state (part2).
 execute' :: Program -> Operation -> Program
 execute' program (Mask _ _ memMask') =
   Program
@@ -150,6 +162,7 @@ execute' program (Write addr value) =
         addresses = map bin2dec $ buildMasks $ applyMask (dec2bin addr') memMask'
         update m a = M.insert a value' m
 
+-- | Solve part2.
 part2 :: [Operation] -> Int
 part2 operations = sum $ M.elems (memory done)
   where

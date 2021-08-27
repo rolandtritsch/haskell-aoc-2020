@@ -72,10 +72,11 @@ type Column = Int
 type Columns = M.Map Column [Field]
 type Mappings = M.Map Description Column
 
+-- | The note that describes the ticket. 
 data Notes = Notes Ranges Ticket [Ticket]
   deriving (Eq, Show)
 
--- | returns the parsed notes
+-- | Read the input file.
 input :: String -> Notes
 input filename = Notes ranges myTicket nearbyTickets
   where
@@ -91,32 +92,32 @@ input filename = Notes ranges myTicket nearbyTickets
             (from, to) = (read $ (splitOn "-" (tokens !! 1)) !! 0, read $ (splitOn "-" (tokens !! 1)) !! 1)
             (from', to') = (read $ (splitOn "-" (tokens !! 3)) !! 0, read $ (splitOn "-" (tokens !! 3)) !! 1)
 
--- | returns invalid fields
+-- | Returns the invalid fields.
 invalidFields :: Notes -> [Field] 
 invalidFields (Notes ranges _ nearbyTickets) = invalid
   where
     valid = nub $ concat $ M.elems ranges
     invalid = filter (flip notElem valid) $ concat nearbyTickets 
 
--- | solving part1
+-- | Solve part1.
 part1 :: Notes -> Int
 part1 notes = sum $ invalidFields notes
 
--- | returns valid tickets
+-- | Returns the valid tickets.
 validTickets :: [Field] -> [Ticket] -> [Ticket]
 validTickets invalid nearbyTickets = filter (not . isInValid) nearbyTickets
   where
     isInValid = any $ flip elem invalid
 
--- | check for a given range, which cols are valid
+-- | Check for a given range, which cols are valid.
 check :: [Field] -> Columns -> [(Int, Bool)]
 check range cols = map (\(c, fs) -> (c, all (flip elem range) fs)) $ M.toList cols
 
--- | checks for all ranges, which cols are valid
+-- | Checks for all ranges, which cols are valid.
 checks :: Ranges -> Columns -> [(Description, [(Column, Bool)])]
 checks ranges cols = map (\(desc, fields) -> (desc, check fields cols)) $ M.toList ranges
 
--- | find the one col, that can be uniquely mapped to a range 
+-- | Find the one col, that can be uniquely mapped to a range. 
 unique :: [(Description, [(Column, Bool)])] -> (Description, Column)
 unique checks' = (desc, col)
   where
@@ -124,7 +125,7 @@ unique checks' = (desc, col)
     unique' (_, cs) = (length $ filter snd cs) == 1
     (col, _) = fromJust $ find snd cols
 
--- | (recursively) collect all of the col indexes
+-- | (Recursively) Collect all of the col indexes.
 collect :: Ranges -> Columns -> Mappings -> Mappings
 collect ranges cols mappings
   | M.size ranges == 0 = mappings
@@ -135,7 +136,7 @@ collect ranges cols mappings
     cols' = M.delete col cols
     mappings' = M.insert desc col mappings
 
--- | returns the fields for the word
+-- | Returns the fields for the word.
 solve :: String -> Notes -> [Int]
 solve word notes@(Notes ranges myTicket nearbyTickets) = map ((!!) myTicket) colIndexes
    where
@@ -143,6 +144,6 @@ solve word notes@(Notes ranges myTicket nearbyTickets) = map ((!!) myTicket) col
      cols = M.fromList $ zip [0..] $ transpose valid
      colIndexes = map snd $ filter (isInfixOf word . fst) $ M.toList $ collect ranges cols M.empty
 
--- | solves part2
+-- | Solve part2.
 part2 :: Notes -> Int
 part2 notes = product $ solve "departure" notes
