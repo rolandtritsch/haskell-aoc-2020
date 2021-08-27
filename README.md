@@ -1,5 +1,6 @@
 # [Advent of Code](https://adventofcode.com) - 2020 (Haskell Edition)
 
+![GHA](https://github.com/rolandtritsch/haskell-aoc-2020/actions/workflows/ci.yml/badge.svg)
 [![CircleCI](https://circleci.com/gh/rolandtritsch/haskell-aoc-2020.svg?style=svg)](https://circleci.com/gh/rolandtritsch/haskell-aoc-2020)
 
 ![AoC](https://github.com/rolandtritsch/haskell-aoc-2020/blob/trunk/images/aoc-day25.png?raw=true)
