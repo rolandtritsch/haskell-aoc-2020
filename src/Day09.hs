@@ -17,13 +17,16 @@ module Day09 where
 import Util (inputRaw)
 import Prelude
 
+-- | The length of the preamble and the numbers.
 data XMAS = XMAS Int [Int]
 
+-- | Read the input file.
 input :: String -> XMAS
 input filename = XMAS preamble numbers
   where
     (preamble : numbers) = map read $ lines $ inputRaw filename
 
+-- | Return true, if there is at least one valid pair.
 check :: [Int] -> Int -> Bool
 check xmas preamble = not (null pairs)
   where
@@ -31,6 +34,7 @@ check xmas preamble = not (null pairs)
     ns = take preamble xmas
     pairs = [(x, y) | x <- ns, y <- ns, x > y, x + y == n]
 
+-- | Return the encryption weakness.
 findEncryptionWeakness :: Int -> [Int] -> (Bool, [Int])
 findEncryptionWeakness invalidNumber (n:numbers) = go (n, [n]) numbers
   where
@@ -43,6 +47,7 @@ findEncryptionWeakness invalidNumber (n:numbers) = go (n, [n]) numbers
       | otherwise = (False, numbers)
 findEncryptionWeakness _ [] = (False, [])
 
+-- | Solve part1.
 part1 :: XMAS -> Int
 part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
   where
@@ -51,6 +56,7 @@ part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
       where
         ns' = tail ns
 
+-- | Solve part2.
 part2 :: XMAS -> Int
 part2 xmas@(XMAS _ numbers) = minimum encryptionWeakness + maximum encryptionWeakness
   where

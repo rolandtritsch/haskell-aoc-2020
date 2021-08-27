@@ -16,7 +16,6 @@
 -- NORMAL (and also return the accumulator). I will then find the
 -- first NORMAL termination and return the accumulator of that
 -- termination.
-
 module Day08 where
 
 import Data.List (find, nub)
@@ -24,30 +23,35 @@ import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import Util (inputRaw)
 
-data Code = NOP | ACC | JMP
-  deriving (Eq, Show)
-
-data Instruction = Instruction Code Int
-  deriving (Eq, Show)
-
-data Exit = NORMAL | LOOP
-  deriving (Eq, Show)
-
 type Program = (Int, Int)
 
 type Stack = [Int]
 
+-- | All of the op codes.
+data Code = NOP | ACC | JMP
+  deriving (Eq, Show)
+
+-- | The instruction.
+data Instruction = Instruction Code Int
+  deriving (Eq, Show)
+
+-- | The possible exits.
+data Exit = NORMAL | LOOP
+  deriving (Eq, Show)
+
+-- | Make an ops code.
 makeCode :: String -> Code
 makeCode "nop" = NOP
 makeCode "acc" = ACC
 makeCode "jmp" = JMP
 makeCode _ = error "Unknown code"
 
+-- | Make an argument. 
 makeArgument :: String -> Int
 makeArgument ('+' : arg) = read arg
 makeArgument arg = read arg
 
--- | Returns a/the list of instructions.
+-- | Read the input file.
 input :: String -> [Instruction]
 input filename = map makeInstruction $ lines $ inputRaw filename
   where
@@ -86,11 +90,13 @@ buildInstructions instructions = fixedInstructions
     fixedInstructions = nub $ map (\(h, t) -> h ++ fixInstruction t) splitInstructions
     splitInstructions = map (\n -> splitAt n instructions) [0 .. length instructions - 1]
 
+-- | Solve part1.
 part1 :: [Instruction] -> Int
 part1 instructions = accumulator
   where
     (accumulator, _) = runProgram instructions (0, 0) []
 
+-- | Solve part2.
 part2 :: [Instruction] -> Int
 part2 instructions = accumulator
   where
