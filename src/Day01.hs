@@ -27,21 +27,21 @@ import Util (inputRaw)
 
 type Expense = Int
 
--- | read the input file
+-- | Read the input file.
 input :: String -> [Expense]
 input = map read . lines . inputRaw
 
--- | returns combinations of pairs
+-- | Returns combinations of pairs.
 combinations2 :: [a] -> [(a, a)]
 combinations2 [] = []
 combinations2 (e : es) = [(e, e') | e' <- es] ++ combinations2 es
 
--- | returns combinations of triplets
+-- | Returns combinations of triplets.
 combinations3 :: [a] -> [(a, a, a)]
 combinations3 [] = []
 combinations3 (e : es) = [(e, e', e'') | (e', e'') <- combinations2 es] ++ combinations3 es
 
--- | solve part1
+-- | Solve part1.
 part1 :: [Expense] -> Int
 part1 expenses = x * y
   where
@@ -50,7 +50,7 @@ part1 expenses = x * y
         find (\(x', y') -> x' + y' == 2020) $
           combinations2 expenses
 
--- | solve part2
+-- | Solve part2.
 part2 :: [Expense] -> Int
 part2 expenses = x * y * z
   where

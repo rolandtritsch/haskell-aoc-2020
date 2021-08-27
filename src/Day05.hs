@@ -3,7 +3,7 @@
 --
 -- Solution:
 --
--- General - Good one. Simple recurrsion problem. Take a range of N and binary
+-- General - Good one. Simple recursion problem. Take a range of N and binary
 -- walk/search it (lower, upper) until you find/hit the element.
 --
 --    N
@@ -16,7 +16,6 @@
 -- Part 1 - Walk the paths for the boarding pathes and find the max of all seat ids.
 --
 -- Part 2 - Find the one seat that is not on the plane.
-
 module Day05 where
 
 import Data.List (find)

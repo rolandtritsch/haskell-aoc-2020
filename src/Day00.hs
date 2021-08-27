@@ -13,14 +13,14 @@ module Day00 where
 import Util (inputRaw)
 import Prelude
 
--- | read the input file.
+-- | Read the input file.
 input :: String -> [String]
 input = lines . inputRaw
 
--- | solve part1.
+-- | Solve part1.
 part1 :: [String] -> Int
 part1 = length
 
--- | solve the part2.
+-- | Solve part2.
 part2 :: [String] -> Int
 part2 = length
