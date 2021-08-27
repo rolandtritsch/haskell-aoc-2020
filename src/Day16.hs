@@ -10,10 +10,52 @@
 -- Part 1 - After that we just have to filter out the invalid codes
 -- from all codes (given by the nearby tickes).
 --
--- Part 2 - ???
+-- Part 2 - This was ... difficult. No big algorithms involved. Just
+-- a lot of careful reading and the realisation that finding the colums
+-- is recursive (not unique, when you do it in one go). This was also
+-- difficult because you where able to make the testcases pass with a
+-- much simpler implementation and then it was hard to understand/see
+-- why it is not working for the puzzle input.
+--
+-- But first things first: Let's define data-structures/terminology ...
+--
+-- * The input has three parts: the ranges of numbers that describe
+--   a valid field (or column; see below)
+-- * The/My ticket. Every number is a field. We need to find out how
+--   to associate these numbers with the ranges above
+-- * Nearby tickets to intersect with ranges to find out which field/column
+--   belongs to which range
+-- * You want to end up with a mapping of range-name to column-number
+--
+-- Now let's talk about the algorithm ...
+--
+-- * This problem can be solved by building intersections of number
+--   sets (we only need any (not empty intersection) and all (full/complete
+--   intersection))
+-- * First we need to find all valid tickets. That's kinda easy. We just
+--   take the invalid fields from part1 and remove the tickets that have
+--   an invalid field in it
+-- * Now the real work starts
+-- * Next we need to realize that we need to look at the valid (nearby)
+--   tickets column by column (and need to find out which column fits/matches
+--   which range)
+-- * This should be easy, right? We just intersect the column with the ranges
+--   and if all the numbers in the column are in the range we have a match
+-- * This is when things get tricky. Because this is not the case. The match
+--   is not unique. Means a column will match with multiple ranges
+-- * BUT ... one of the columns will match with exactly one range. And that's
+--   the one you are looking for. You then have your first mapping of a
+--   range-name to a column-number
+-- * You then need to remove the range from the ranges and the column from
+--   the columns and do it again (recursively, until no more ranges/columns
+--   need to be mapped
+-- * When you are done with the mapping you can just lookup/select the
+--   6 column-numbers, lookup the 6 numbers in your ticket and multiply
+--   them
+-- * Done 
 module Day16 where
 
-import Data.List (find, findIndex, isInfixOf, nub, transpose)
+import Data.List (find, isInfixOf, nub, transpose)
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import qualified Data.Map as M
@@ -23,26 +65,24 @@ import Util (inputRaw)
 import Prelude
 
 type Description = String
-
 type Field = Int
-
 type Ranges = M.Map Description [Field]
+type Ticket = [Field]
+type Column = Int
+type Columns = M.Map Column [Field]
+type Mappings = M.Map Description Column
 
-data Notes = Notes
-  { ranges :: Ranges,
-    myTicket :: [Field],
-    nearbyTickets :: [[Field]]
-  }
+data Notes = Notes Ranges Ticket [Ticket]
   deriving (Eq, Show)
 
 -- | returns the parsed notes
 input :: String -> Notes
-input filename = Notes {ranges = ranges', myTicket = myTicket', nearbyTickets = nearbyTickets'}
+input filename = Notes ranges myTicket nearbyTickets
   where
     processLine l = map read $ splitOn "," l
-    myTicket' = processLine $ head $ lines $ inputRaw (filename ++ "-your")
-    nearbyTickets' = map processLine $ lines $ inputRaw (filename ++ "-nearby")
-    ranges' = foldl processRange M.empty $ lines $ inputRaw (filename ++ "-ranges")
+    myTicket = processLine $ head $ lines $ inputRaw (filename ++ "-your")
+    nearbyTickets = map processLine $ lines $ inputRaw (filename ++ "-nearby")
+    ranges = foldl processRange M.empty $ lines $ inputRaw (filename ++ "-ranges")
       where
         processRange rs r = M.insert desc ([from .. to] ++ [from' .. to']) rs
           where
@@ -53,72 +93,55 @@ input filename = Notes {ranges = ranges', myTicket = myTicket', nearbyTickets = 
 
 -- | returns invalid fields
 invalidFields :: Notes -> [Field] 
-invalidFields notes = filter (\e -> notElem e valid) nearby
+invalidFields (Notes ranges _ nearbyTickets) = invalid
   where
-    valid = nub $ concat $ M.elems $ ranges notes
-    nearby = concat $ nearbyTickets notes
+    valid = nub $ concat $ M.elems ranges
+    invalid = filter (flip notElem valid) $ concat nearbyTickets 
 
 -- | solving part1
 part1 :: Notes -> Int
 part1 notes = sum $ invalidFields notes
 
 -- | returns valid tickets
-validTickets :: [Field] -> [[Field]] -> [[Field]]
-validTickets invalid nearby = filter (not . isInValid) nearby
+validTickets :: [Field] -> [Ticket] -> [Ticket]
+validTickets invalid nearbyTickets = filter (not . isInValid) nearbyTickets
   where
     isInValid = any $ flip elem invalid
 
--- | returns index of given range desc
-rangeIndex :: [[Field]] -> [Field] -> Int
-rangeIndex valid fields = fromJust $ findIndex range (transpose valid)
+-- | check for a given range, which cols are valid
+check :: [Field] -> Columns -> [(Int, Bool)]
+check range cols = map (\(c, fs) -> (c, all (flip elem range) fs)) $ M.toList cols
+
+-- | checks for all ranges, which cols are valid
+checks :: Ranges -> Columns -> [(Description, [(Column, Bool)])]
+checks ranges cols = map (\(desc, fields) -> (desc, check fields cols)) $ M.toList ranges
+
+-- | find the one col, that can be uniquely mapped to a range 
+unique :: [(Description, [(Column, Bool)])] -> (Description, Column)
+unique checks' = (desc, col)
   where
-    range = all (flip elem fields)
-
--- | returns the range indexes for ranges that have the given word in it
-rangeIndexes :: String -> Ranges -> [[Field]] -> [Int]
-rangeIndexes word ranges' valid = map (rangeIndex valid) fields
-  where
-    fields = map ((M.!) ranges') $ filter (isInfixOf word) (M.keys ranges')
-
--- reduce :: [[Field]] -> Ranges -> ((String, Int), [[Field]])
--- reduce valid ranges = ((desc, col), next)
---   where
---     cols = zip [0..] $ transpose valid
-
--- | for a given range, check which cols are valid
-check :: [Field] -> [(Int, [Field])] -> [(Int, Bool)]
-check fields cols = map (\(c, fs) -> (c, all (flip elem fields) fs)) cols
-
--- | for all ranges, check which cols are valid
-check' :: [(Description, [Field])] -> [(Int, [Field])] -> [(Description, [(Int, Bool)])]
-check' ranges' cols = map (\(desc, fields) -> (desc, check fields cols)) ranges'
-
--- | find the (range, col) that is unique
-find' :: [(Description, [(Int, Bool)])] -> (Description, Int)
-find' checks = (desc, col)
-  where
-    (desc, cols) = fromJust $ find unique checks
-    unique (_, cs) = (length $ filter snd cs) == 1
+    (desc, cols) = fromJust $ find unique' checks'
+    unique' (_, cs) = (length $ filter snd cs) == 1
     (col, _) = fromJust $ find snd cols
 
 -- | (recursively) collect all of the col indexes
-collect :: Ranges -> [(Int, [Field])] -> [(Description, Int)] -> [(Description, Int)]
-collect ranges' cols' fields'
-  | M.size ranges' == 0 = fields'
-  | otherwise = collect ranges'' cols'' fields''
+collect :: Ranges -> Columns -> Mappings -> Mappings
+collect ranges cols mappings
+  | M.size ranges == 0 = mappings
+  | otherwise = collect ranges' cols' mappings'
   where
-    next@(desc, col) = find' $ check' (M.toList ranges') cols'
-    ranges'' = M.delete desc ranges'
-    cols'' = filter ((/=) col . fst) cols'
-    fields'' = next : fields'
+    (desc, col) = unique $ checks ranges cols
+    ranges' = M.delete desc ranges
+    cols' = M.delete col cols
+    mappings' = M.insert desc col mappings
 
 -- | returns the fields for the word
 solve :: String -> Notes -> [Int]
-solve word notes = map ((!!) $ myTicket notes) cidx
+solve word notes@(Notes ranges myTicket nearbyTickets) = map ((!!) myTicket) colIndexes
    where
-     valid = validTickets (invalidFields notes) (nearbyTickets notes)
-     cols = zip [0..] $ transpose valid
-     cidx = map snd $ filter (isInfixOf word . fst) $ collect (ranges notes) cols []
+     valid = validTickets (invalidFields notes) nearbyTickets
+     cols = M.fromList $ zip [0..] $ transpose valid
+     colIndexes = map snd $ filter (isInfixOf word . fst) $ M.toList $ collect ranges cols M.empty
 
 -- | solves part2
 part2 :: Notes -> Int
