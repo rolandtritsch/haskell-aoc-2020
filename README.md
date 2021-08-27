@@ -11,3 +11,5 @@ To make this work you need to ...
 * run `stack build`
 * run `stack exec haskell-aoc-exe`
 * run `stack test haskell-aoc:haskell-aoc-test-day00 --file-watch` to test a specific day
+
+You can (re)generate the [documentation](https://github.com/rolandtritsch/haskell-aoc-2020/blob/trunk/doc/index.html?raw=true) (with some explanations on the solutions) with `stack exec -- haddock src/*.hs --html --odir ./doc`.
