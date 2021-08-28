@@ -7,7 +7,7 @@ on:
     - trunk
 
 jobs:
-  test:
+  test-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,16 +18,37 @@ jobs:
       uses: haskell/actions/setup@v1
       with:
         ghc-version: '8.8.3' # Exact version of ghc to use
-        # cabal-version: 'latest'. Omitted, but defaults to 'latest'
         enable-stack: true
         stack-version: 'latest'
 
-    - name: Test
-      run: stack test
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack-work      
 
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_USERNAME: haskell-aoc-2020
-        SLACK_MESSAGE: 'Test success'
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    - name: Build
+      run: stack build --no-run-test
+
+  test-day00:
+    needs: test-build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '8.8.3' # Exact version of ghc to use
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack-work
+        
+    - name: Test
+      run: stack build --test haskell-aoc:haskell-aoc-test-day00
+
