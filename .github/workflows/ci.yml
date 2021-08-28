@@ -84,3 +84,15 @@ jobs:
         
     - name: Test
       run: stack build --test haskell-aoc:haskell-aoc-test-day01
+
+  test-done:
+    needs: test-day01
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_USERNAME: haskell-aoc-2020
+        SLACK_MESSAGE: 'Test success'
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
