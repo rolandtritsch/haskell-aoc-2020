@@ -28,7 +28,7 @@ jobs:
         path: ~/.stack-work
 
     - name: Build
-      run: stack clean && stack build --no-run-test
+      run: stack clean && stack build --no-run-tests
 
   test-day00:
     needs: test-build
