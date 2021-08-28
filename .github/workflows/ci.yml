@@ -24,8 +24,10 @@ jobs:
     - name: Cache
       uses: actions/cache@v2
       with:
-        key: stack-work
-        path: ~/.stack-work
+        key: stack
+        path: |
+          ~/.stack
+          ~/.stack-work
 
     - name: Build
       run: stack clean && stack build --no-run-tests
@@ -48,8 +50,10 @@ jobs:
     - name: Cache
       uses: actions/cache@v2
       with:
-        key: stack-work
-        path: ~/.stack-work
+        key: stack
+        path: |
+          ~/.stack
+          ~/.stack-work
         
     - name: Test
       run: stack build --test haskell-aoc:haskell-aoc-test-day00
