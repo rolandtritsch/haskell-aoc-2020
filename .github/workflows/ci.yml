@@ -30,13 +30,15 @@ jobs:
       uses: actions/checkout@v2
       with:
         refs: gh-pages
+
+    - name: Build
       run: |
-          git config user.name rolandtritsch
-          git config user.email roland@tritsch.org
-          stack exec -- haddock ./src/*.hs --html --odir ./docs
-          git add .
-          git commit -m "Update docs"
-          git push
+        git config user.name rolandtritsch
+        git config user.email roland@tritsch.org
+        stack exec -- haddock ./src/*.hs --html --odir ./docs
+        git add .
+        git commit -m "Update docs"
+        git push
 
   test-build:
     runs-on: ubuntu-latest
