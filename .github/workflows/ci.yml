@@ -7,12 +7,17 @@ on:
     - trunk
 
 jobs:
-  test-build:
+  doc-build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        key: stack
+        path: |
+          ~/.stack
+          ~/.stack-work
 
     - name: Setup
       uses: haskell/actions/setup@v1
@@ -21,6 +26,22 @@ jobs:
         enable-stack: true
         stack-version: 'latest'
 
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        refs: gh-pages
+      run: |
+          git config user.name rolandtritsch
+          git config user.email roland@tritsch.org
+          stack exec -- haddock ./src/*.hs --html --odir ./docs
+          git add .
+          git commit -m "Update docs"
+          git push
+
+  test-build:
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Cache
       uses: actions/cache@v2
       with:
@@ -28,6 +49,16 @@ jobs:
         path: |
           ~/.stack
           ~/.stack-work
+
+    - name: Setup
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '8.8.3' # Exact version of ghc to use
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: Build
       run: stack clean && stack build --no-run-tests
@@ -37,16 +68,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Setup
-      uses: haskell/actions/setup@v1
-      with:
-        ghc-version: '8.8.3' # Exact version of ghc to use
-        enable-stack: true
-        stack-version: 'latest'
-
     - name: Cache
       uses: actions/cache@v2
       with:
@@ -55,25 +76,24 @@ jobs:
           ~/.stack
           ~/.stack-work
         
+    - name: Setup
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '8.8.3' # Exact version of ghc to use
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Test
       run: stack build --test haskell-aoc:haskell-aoc-test-day00
-
 
   test-day01:
     needs: test-build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Setup
-      uses: haskell/actions/setup@v1
-      with:
-        ghc-version: '8.8.3' # Exact version of ghc to use
-        enable-stack: true
-        stack-version: 'latest'
-
     - name: Cache
       uses: actions/cache@v2
       with:
@@ -82,11 +102,47 @@ jobs:
           ~/.stack
           ~/.stack-work
         
+    - name: Setup
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '8.8.3' # Exact version of ghc to use
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Test
       run: stack build --test haskell-aoc:haskell-aoc-test-day01
 
+  test-day02:
+    needs: test-build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        key: stack
+        path: |
+          ~/.stack
+          ~/.stack-work
+        
+    - name: Setup
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '8.8.3' # Exact version of ghc to use
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Test
+      run: stack build --test haskell-aoc:haskell-aoc-test-day02
+
   test-done:
-    needs: test-day01
+    needs: [test-day01, test-day02]  
     runs-on: ubuntu-latest
 
     steps:
