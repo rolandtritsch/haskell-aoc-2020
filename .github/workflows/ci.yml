@@ -57,3 +57,30 @@ jobs:
         
     - name: Test
       run: stack build --test haskell-aoc:haskell-aoc-test-day00
+
+
+  test-day01:
+    needs: test-build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '8.8.3' # Exact version of ghc to use
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        key: stack
+        path: |
+          ~/.stack
+          ~/.stack-work
+        
+    - name: Test
+      run: stack build --test haskell-aoc:haskell-aoc-test-day01
