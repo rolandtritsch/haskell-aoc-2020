@@ -28,12 +28,13 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v2
+      with:
+        ref: gh-pages
 
     - name: Build
       run: |
         git config user.name rolandtritsch
         git config user.email roland@tritsch.org
-        git checkout gh-pages
         git merge trunk -m "Merge trunk"
         stack exec -- haddock ./src/*.hs --html --odir ./docs
         git add .
