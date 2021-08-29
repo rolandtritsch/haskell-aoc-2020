@@ -12,7 +12,8 @@ run = hspec $ do
 
   describe "part1" $ do
     it "testcases" $ do
-      part1 (input "./input/Day18p1test.txt") `shouldBe` 26457
+      let expected = sum [71,51,26,437,12240,13632]
+      part1 (input "./input/Day18p1test.txt") `shouldBe` expected
 
     it "puzzle" $ do
       part1 (input "./input/Day18p1.txt") `shouldBe` 209335026987
