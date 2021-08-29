@@ -76,9 +76,22 @@ toPostfixToken' output'' operators''
   where
     (o, os) = popS operators''
 
--- | Turn a postfix/RPN string into an expression AST
+-- | Turn a postfix/RPN string into an expression AST.
 toExpression :: String -> Expression
 toExpression postfix = fst $ go (reverse postfix)
+  where
+    go (token : tokens)
+      | token == '+' = (Add left right, tokens'')
+      | token == '*' = (Mul left right, tokens'')
+      | otherwise = (Val (digitToInt token), tokens)
+      where
+        (left, tokens') = go tokens
+        (right, tokens'') = go tokens'
+    go [] = (Nil, [])
+
+-- | Turn a postfix/RPN string into an expression AST (part1).
+toExpression' :: String -> Expression
+toExpression' postfix = fst $ go (reverse postfix)
   where
     go (token : tokens)
       | token == '+' = (Add left right, tokens'')
@@ -103,6 +116,12 @@ input :: String -> [Expression]
 input filename = map processLine $ lines $ inputRaw filename
   where
     processLine l = toExpression $ toPostfix $ reverse' l
+
+-- | Read the input file.
+input' :: String -> [Expression]
+input' filename = map processLine $ lines $ inputRaw filename
+  where
+    processLine l = toExpression' $ toPostfix $ reverse' l
 
 -- | (Recursively) Evaluate an expression.
 eval :: Expression -> Int
