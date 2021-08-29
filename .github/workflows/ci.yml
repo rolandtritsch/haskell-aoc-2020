@@ -31,15 +31,19 @@ jobs:
       with:
         ref: gh-pages
 
+    - name: Merge
+      uses: devmasx/merge-branch@v1.3.1
+      with:
+        type: now
+        from_branch: trunk
+        target_branch: gh-pages
+        github_token: ${{ github.token }}
+
     - name: Build
-      run: |
-        git config user.name rolandtritsch
-        git config user.email roland@tritsch.org
-        git merge trunk -m "Merge trunk"
-        stack exec -- haddock ./src/*.hs --html --odir ./docs
-        git add .
-        git commit -m "Update docs"
-        git push
+      run: stack exec -- haddock ./src/*.hs --html --odir ./docs
+
+    - name: Push
+      uses: EndBug/add-and-commit@v7
 
   test-build:
     runs-on: ubuntu-latest
