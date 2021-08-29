@@ -28,7 +28,10 @@
 --
 -- Part 1 - Just cycle 6 times.
 --
--- Part 2 - ???
+-- Part 2 - Ok ... I am cheating here. My implementation is not
+-- dimension-independent, means ... I am *just* duplicating the
+-- code (datastructures and algorithms) to make it work with/in
+-- 4 dimension. Not pretty, but ... it works.
 module Day17 where
 
 import Data.List (nub)
@@ -37,9 +40,11 @@ import Util (inputRaw)
 import Prelude
 
 type Coordinate = (Int, Int, Int)
+
 type Coordinate' = (Int, Int, Int, Int)
 
 type Pocket = S.Set Coordinate
+
 type Pocket' = S.Set Coordinate'
 
 -- | Read the input file (part1).
