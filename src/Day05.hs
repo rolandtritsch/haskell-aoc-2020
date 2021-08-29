@@ -3,7 +3,7 @@
 --
 -- Solution:
 --
--- General - Good one. Simple recurrsion problem. Take a range of N and binary
+-- General - Good one. Simple recursion problem. Take a range of N and binary
 -- walk/search it (lower, upper) until you find/hit the element.
 --
 --    N
@@ -13,62 +13,52 @@
 -- A path has the range and the steps in it. A boarding pass has two pathes: A
 -- row path and a column path.
 --
--- Part 1 - Walk the paths for the boarding pathes and find the max of all seat ids.
+-- Right?
 --
--- Part 2 - Find the one seat that is not on the plane.
-
+-- Wrong!
+--
+-- If you think about it for a sec (or have somebody tell you), you will realize
+-- that the boarding pass can be read as a binary number and that the seatId is
+-- that binary number.
+--
+-- Part 1 - Find the max of all seats ids.
+--
+-- Part 2 - Find the one seat ids that is not on the plane.
 module Day05 where
 
+import Data.Char (digitToInt)
 import Data.List (find)
 import Data.Maybe (fromJust)
-import Text.Regex (matchRegex, mkRegex)
 import Util (inputRaw)
+
 import Prelude
 
-data Step = Lower | Upper
+type SeatId = Int
 
-data Range = Range Int Int
-
-data Path = Path Range [Step]
-
-data BoardingPass = BoardingPass Path Path
-
-input :: String -> [BoardingPass]
-input filename = map makeBoardingPass $ lines $ inputRaw filename
+-- | Read input file.
+input :: String -> [SeatId]
+input filename = map makeSeatId $ lines $ inputRaw filename
   where
-    makeBoardingPass line = BoardingPass (Path (Range 0 127) rowSteps) (Path (Range 0 7) colSteps)
-      where
-        linePattern = mkRegex "^((F|B)*)((L|R)*)$"
-        (Just (rowPath : _ : colPath : _)) = matchRegex linePattern line
-        rowSteps = map makeStep rowPath
-          where
-            makeStep 'F' = Lower
-            makeStep 'B' = Upper
-            makeStep _ = Upper -- Never happening. Protected by regex above.
-        colSteps = map makeStep colPath
-          where
-            makeStep 'L' = Lower
-            makeStep 'R' = Upper
-            makeStep _ = Upper -- Never happening. Protected by regex above.
+    makeSeatId boardingPass = toInt $ map toBin boardingPass  
 
-makeSeatId :: BoardingPass -> Int
-makeSeatId (BoardingPass row col) = rowId * 8 + colId
+-- | Convert characters to binary digits.
+toBin :: Char -> Char
+toBin 'F' = '0'
+toBin 'B' = '1'
+toBin 'L' = '0'
+toBin 'R' = '1'
+toBin _ = error "Unexpected case"
+
+-- | Convert binary string to Int.
+toInt :: String -> Int
+toInt = foldl (\i c -> i * 2 + digitToInt c) 0
+
+-- | Solve part1.
+part1 :: [SeatId] -> Int
+part1 seatIds = maximum seatIds
+
+-- | Solve part2.
+part2 :: [SeatId] -> Int
+part2 seatIds = fromJust $ find (\s -> notElem s seatIds) allSeatIds
   where
-    rowId = walkPath row
-    colId = walkPath col
-
-walkPath :: Path -> Int
-walkPath (Path (Range from to) (Lower : steps)) = walkPath (Path (Range from (div (from + to) 2)) steps)
-walkPath (Path (Range from to) (Upper : steps)) = walkPath (Path (Range (div (from + to) 2 + 1) to) steps)
-walkPath (Path (Range from _) []) = from
-
-part1 :: [BoardingPass] -> Int
-part1 bs = maximum seatIds
-  where
-    seatIds = map makeSeatId bs
-
-part2 :: [BoardingPass] -> Int
-part2 bs = fromJust $ find (\s -> notElem s seatIds) allSeats
-  where
-    seatIds = map makeSeatId bs
-    allSeats = [(minimum seatIds) .. (maximum seatIds)]
+    allSeatIds = [(minimum seatIds) .. (maximum seatIds)]

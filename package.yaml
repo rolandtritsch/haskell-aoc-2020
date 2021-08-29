@@ -816,6 +816,7 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
+    - containers
 
   haskell-aoc-test-day17:
     main: Day17Spec.hs

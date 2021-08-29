@@ -19,37 +19,42 @@
 -- Part 1 - Do it with pairs.
 --
 -- Part 2 - Do it with triplets.
-
 module Day01 where
 
-import Util (inputRaw)
 import Data.List (find)
 import Data.Maybe (fromJust)
+import Util (inputRaw)
 
 type Expense = Int
 
--- | read the input file.
+-- | Read the input file.
 input :: String -> [Expense]
 input = map read . lines . inputRaw
 
+-- | Returns combinations of pairs.
 combinations2 :: [a] -> [(a, a)]
 combinations2 [] = []
-combinations2 (e:es) = [(e, e') | e' <- es] ++ combinations2 es
+combinations2 (e : es) = [(e, e') | e' <- es] ++ combinations2 es
 
+-- | Returns combinations of triplets.
 combinations3 :: [a] -> [(a, a, a)]
 combinations3 [] = []
-combinations3 (e:es) = [(e, e', e'') | (e', e'') <- combinations2 es] ++ combinations3 es
+combinations3 (e : es) = [(e, e', e'') | (e', e'') <- combinations2 es] ++ combinations3 es
 
+-- | Solve part1.
 part1 :: [Expense] -> Int
 part1 expenses = x * y
   where
-    (x, y) = fromJust
-      $ find (\(x', y') -> x' + y' == 2020)
-      $ combinations2 expenses
+    (x, y) =
+      fromJust $
+        find (\(x', y') -> x' + y' == 2020) $
+          combinations2 expenses
 
+-- | Solve part2.
 part2 :: [Expense] -> Int
 part2 expenses = x * y * z
   where
-    (x, y, z) = fromJust
-      $ find (\(x', y', z') -> x' + y' + z' == 2020)
-      $ combinations3 expenses
+    (x, y, z) =
+      fromJust $
+        find (\(x', y', z') -> x' + y' + z' == 2020) $
+          combinations3 expenses

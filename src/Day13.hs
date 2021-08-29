@@ -46,39 +46,40 @@
 -- But then you realize that you found a solution for the system,
 -- but not the smallest one. You can get the smallest solution
 -- by caluculating the mod of the chineseRemainder and the product
--- of all moduli. 
+-- of all moduli.
 --
 -- That's it.
-
 module Day13 where
 
-import Numeric.Domain.Euclidean (chineseRemainder)
-
-import Data.List (sortOn, find)
+import Data.List (find, sortOn)
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
+import Numeric.Domain.Euclidean (chineseRemainder)
 import Util (inputRaw)
 import Prelude
 
+-- | The schedule (with all the busses).
 data Schedule = Schedule
   { departure :: Int,
     busses :: [Int],
-    busses' :: [(Integer, Integer)]    
+    busses' :: [(Integer, Integer)]
   }
 
+-- | Read the input file.
 input :: String -> Schedule
 input filename = Schedule {departure = departure', busses = busses'', busses' = busses'''}
   where
     contents = lines $ inputRaw filename
     departure' = read $ head contents
     busses'' = map read $ filter (/= "x") $ splitOn "," (contents !! 1)
-    busses''' = map f $ filter (\(b, _) -> b /= "x") $ zip (splitOn "," (contents !! 1)) [0..]
+    busses''' = map f $ filter (\(b, _) -> b /= "x") $ zip (splitOn "," (contents !! 1)) [0 ..]
       where
         f (b, o) = (b', o')
           where
-            b' = read b :: Integer 
+            b' = read b :: Integer
             o' = b' - o :: Integer
 
+-- | Solve part1.
 part1 :: Schedule -> Int
 part1 schedule = minutes * bus
   where
@@ -86,6 +87,7 @@ part1 schedule = minutes * bus
       where
         waitTime b = ((negate $ mod (departure schedule) b) + b, b)
 
+-- | Solve part2 (using an algorithm).
 part2' :: Schedule -> Integer
 part2' schedule = (fromJust $ find solve possible) - bn
   where
@@ -98,8 +100,9 @@ part2' schedule = (fromJust $ find solve possible) - bn
         mb = fst $ maximum (busses' schedule)
     solve p = all check bs
       where
-        check (b, o) = mod (p+o-bn) b == 0
-        
+        check (b, o) = mod (p + o - bn) b == 0
+
+-- | Solve part2 (using a calculation).
 part2 :: Schedule -> Integer
 part2 schedule = mod cr m
   where

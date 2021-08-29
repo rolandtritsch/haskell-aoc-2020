@@ -20,7 +20,6 @@
 -- Part 1 - Doing the above.
 --
 -- Part 2 - Using part1 to do it for all given moves.
-
 module Day03 where
 
 import Util (inputRaw)
@@ -30,9 +29,11 @@ type Coordinates = (Int, Int)
 
 type Trees = [Coordinates]
 
+-- | The forrest with all its trees.
 data Forrest = Forrest Int Int Trees
   deriving (Eq, Show)
 
+-- | Read the input file.
 input :: String -> Forrest
 input filename = Forrest xMax yMax trees
   where
@@ -45,6 +46,7 @@ input filename = Forrest xMax yMax trees
           where
             treePositions = zip [0 .. yMax] treeLine
 
+-- | Solve part1.
 part1 :: Forrest -> Coordinates -> Int
 part1 forrest move = length collisions
   where
@@ -58,6 +60,7 @@ part1 forrest move = length collisions
           | x >= xMax = []
           | otherwise = [(x + down, y + right)] ++ go (right, down) (x + down, y + right)
 
+-- | Solve part2.
 part2 :: Forrest -> Int
 part2 forrest = product slopes
   where

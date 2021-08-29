@@ -9,6 +9,10 @@ run = hspec $ do
     it "input" $ do
       length (input "./input/Day05p1test.txt") `shouldBe` 4
 
+  describe "toInt" $ do
+    it "testcases" $ do
+      toInt "0101100101" `shouldBe` 357
+      
   describe "part1" $ do
     it "testcases" $ do
       part1 (input "./input/Day05p1test.txt") `shouldBe` 820

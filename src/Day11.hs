@@ -37,7 +37,6 @@
 -- neighbor count, but the count of occupied and empty seats we can see/
 -- reach (walking from the current position; over the floor; in all 8
 -- directions).
-
 module Day11 where
 
 import Data.Maybe (mapMaybe)
@@ -57,8 +56,10 @@ type Distance = (Int, Status)
 
 type SeatsNeighborDistanceMap = M.Map Location [Distance]
 
+-- | The current seats status.
 data Seats = Seats SeatsStatus SeatsNeighborDistanceMap Dimensions
 
+-- | Read the input file.
 input :: String -> Seats
 input filename = Seats status neighbors dimensions
   where
@@ -69,6 +70,7 @@ input filename = Seats status neighbors dimensions
     status = M.fromList $ foldl (++) [] $ map (\(row, cols) -> map (\(col, s) -> ((row, col), s)) cols) grid
     neighbors = makeNeighbors status dimensions
 
+-- | Take the current status and return a/the distance map for it.
 makeNeighbors :: SeatsStatus -> Dimensions -> SeatsNeighborDistanceMap
 makeNeighbors status dimensions = M.fromList neighbors
   where
@@ -104,7 +106,8 @@ makeNeighbors status dimensions = M.fromList neighbors
                   | status M.! (row + rowDelta, col + colDelta) == 'L' = Just(d offset, 'L') 
                   | otherwise = Nothing
                 measure a _ = a
-          
+
+-- | (Recursively) Iterate over the seating area.
 seatingArea :: (Seats -> Location -> Status) -> Seats -> [Char]
 seatingArea calcStatus seats@(Seats status _ _) = M.elems doneStatus
   where
@@ -121,6 +124,7 @@ seatingArea calcStatus seats@(Seats status _ _) = M.elems doneStatus
         nextStatus = M.fromList $ [((row, col), calcStatus seats'' (row, col)) | row <- [0 .. (rowCount - 1)], col <- [0 .. (colCount -1)]]
         nextNeighbors = makeNeighbors nextStatus dimensions
 
+-- | The transition function for part1.
 calcStatus' :: Seats -> Location -> Status
 calcStatus' (Seats status neighbors _) position
   | status M.! position == 'L' && adjacent '#' position == 0 = '#'
@@ -129,12 +133,15 @@ calcStatus' (Seats status neighbors _) position
   where
     adjacent s p = length $ filter (\(d', s') -> d' == 1 && s' == s) $ neighbors M.! p
 
+-- | Solve the puzzle with the given status transition function. 
 solve :: (Seats -> Location -> Status) -> Seats -> Int
 solve calcStatus seats = length $ filter (== '#') $ seatingArea calcStatus seats
 
+-- | Solve part1.
 part1 :: Seats -> Int
 part1 seats = solve calcStatus' seats 
 
+-- | The transition function for part2.
 calcStatus'' :: Seats -> Location -> Status
 calcStatus'' (Seats status neighbors _) position
   | status M.! position == 'L' && visible '#' position == 0 = '#'
@@ -143,5 +150,6 @@ calcStatus'' (Seats status neighbors _) position
   where
     visible s p = length $ filter (\(_, s') -> s' == s) $ neighbors M.! p
     
+-- | Solve part2.
 part2 :: Seats -> Int
 part2 seats = solve calcStatus'' seats 

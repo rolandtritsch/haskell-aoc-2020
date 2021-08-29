@@ -10,7 +10,6 @@
 --
 -- Part 2 - Counting number of questions per group where everybody (all) said yes.
 -- Sum up the questions.
-
 module Day06 where
 
 import Data.List (group, intercalate, nub, sort)
@@ -20,19 +19,20 @@ import Prelude
 
 type Group = [String]
 
+-- | Read the input file.
 input :: String -> [Group]
 input filename = map (splitOn "\n") $ splitOn "\n\n" $ inputRaw filename
 
+-- | Solve part1.
 part1 :: [Group] -> Int
 part1 gs = sum questions
   where
     questions = map countYes gs
-      where
-        countYes g = length $ nub $ intercalate "" g
+    countYes g = length $ nub $ intercalate "" g
 
+-- | Solve part2.
 part2 :: [Group] -> Int
 part2 gs = sum questions + 1
   where
     questions = map countYes gs
-      where
-        countYes g = length $ filter (\g' -> length g' == length g) $ group $ sort $ intercalate "" g
+    countYes g = length $ filter (\g' -> length g' == length g) $ group $ sort $ intercalate "" g

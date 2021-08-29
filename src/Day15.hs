@@ -15,7 +15,6 @@
 -- Part 2 - Take 30000000 turns and return the last number spoken.
 -- Big surprise (or not): The implementation for part1 is slow, but ...
 -- ... not so slow that it is not returing a within 2 minutes.
-
 module Day15 where
 
 import qualified Data.Map as M
@@ -28,12 +27,15 @@ type Turn = Int
 
 type Spoken = M.Map Number [Turn]
 
+-- | Read the input file.
 input :: String -> [Number]
 input filename = map read $ lines $ inputRaw filename
 
+-- | Speak the number (and return the record of spoken numbers).
 speak :: Number -> Turn -> Spoken -> Spoken
 speak number turn spoken = M.insertWith (++) number [turn] spoken
 
+-- | What to say.
 whatToSay :: Number -> Turn -> Spoken -> Number
 whatToSay number turn spoken
   | M.notMember number spoken = 0
@@ -41,6 +43,7 @@ whatToSay number turn spoken
   where
     lastTime = head $ spoken M.! number
 
+-- | What's the next turn?
 nextTurn :: Number -> Spoken -> Turn -> Turn -> [Number]
 nextTurn number _ _ 0 = [number]
 nextTurn number spoken turn turned = nextTurn nextNumber nextSpoken (turn + 1) (turned - 1) ++ [number]
@@ -48,6 +51,7 @@ nextTurn number spoken turn turned = nextTurn nextNumber nextSpoken (turn + 1) (
     nextNumber = whatToSay number turn spoken
     nextSpoken = speak number turn spoken
 
+-- | Solve the puzzle.
 solve :: Turn -> [Number] -> Number
 solve turns numbers = head $ nextTurn initialNumber initialSpoken initialTurn initialTurned
   where
@@ -56,8 +60,10 @@ solve turns numbers = head $ nextTurn initialNumber initialSpoken initialTurn in
     initialTurn = length numbers + 1
     initialTurned = turns - length numbers - 1
 
+-- | Solve part1.
 part1 :: [Number] -> Number
 part1 = solve 2020
 
+-- | Solve part2.
 part2 :: [Number] -> Number
 part2 = solve 30000000

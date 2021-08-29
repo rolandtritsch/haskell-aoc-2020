@@ -8,16 +8,26 @@
 -- Part 1 - After you have the data, solving the puzzle becomes easy.
 --
 -- Part 2 - Implemented xor for that.
-
 module Day02 where
 
 import Data.List.Split (splitOn)
 import Util (inputRaw)
 import Prelude
 
-data Password = Password Int Int Char String
+-- | The policy and the password to check.
+data Password
+  = Password
+      Int
+      -- ^ Minimal number of occurences for character.
+      Int
+      -- ^ Maximum number of occurences for character.
+      Char
+      -- ^ The character.
+      String
+      -- ^ The password.
   deriving (Eq, Show)
 
+-- | Read the input file.
 input :: String -> [Password]
 input filename = map parse $ lines $ inputRaw filename
   where
@@ -28,9 +38,11 @@ input filename = map parse $ lines $ inputRaw filename
         char' = (splitOn ":" (words line !! 1) !! 0) !! 0
         password' = words line !! 2
 
+-- | XOR the expression.
 xor :: Bool -> Bool -> Bool
 xor a b = (a || b) && not (a && b)
 
+-- | Solve part1.
 part1 :: [Password] -> Int
 part1 passwords = length compliant
   where
@@ -40,6 +52,7 @@ part1 passwords = length compliant
         (Password min' max' char' password') = pw
         number = length $ filter (== char') password'
 
+-- | Solve part2.
 part2 :: [Password] -> Int
 part2 passwords = length compliant
   where

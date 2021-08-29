@@ -10,7 +10,6 @@
 --
 -- Part 2 - Just use contains (recursively) to count how many bag colors can
 -- eventually contain at least one shiny gold bag.
-
 module Day07 where
 
 import Data.List (nub)
@@ -30,9 +29,11 @@ type Contains = M.Map OuterBag [InnerBag]
 
 type IsIn = M.Map Bag [Bag]
 
+-- | The tree of bags described by it contains and isIn relationships.
 data Bags = Bags Contains IsIn
   deriving (Eq, Show)
 
+-- | Read the input file.
 input :: String -> Bags
 input filename = Bags contains isIn
   where
@@ -55,22 +56,27 @@ input filename = Bags contains isIn
             processInner isIn'' [] = isIn''
             processInner isIn'' bags = M.insertWith (++) (head bags) [outer] isIn''
 
+-- | Returns all the bags this bag is in.
 collectOuters :: IsIn -> Bag -> [Bag]
 collectOuters isIn bag = processOuters $ M.lookup bag isIn
   where
     processOuters Nothing = [bag]
     processOuters (Just outers) = concatMap (collectOuters isIn) outers ++ [bag]
 
+-- | Returns the number of bags that are in the given bag.
 countingBags :: Contains -> InnerBag -> Int
 countingBags _ [] = 0
-countingBags contains bags = (length bags) + (sum $ map (\b -> processBags (fromJust (M.lookup b contains))) bags)
+countingBags contains bags = (length bags) + countingBags'
   where
+    countingBags' = sum $ map (\b -> processBags (fromJust $ M.lookup b contains)) bags
     processBags bs = sum $ map (countingBags contains) bs
 
+-- | Solve part1.
 part1 :: Bags -> Int
 part1 (Bags _ isIn) = length outerBags - 1
   where
     outerBags = nub $ collectOuters isIn "shiny gold"
 
+-- | Solve part2.
 part2 :: Bags -> Int
 part2 (Bags contains _) = countingBags contains ["shiny gold"] - 1
