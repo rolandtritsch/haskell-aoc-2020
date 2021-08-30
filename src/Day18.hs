@@ -20,7 +20,8 @@
 --
 -- Part 1 - Evaluate all expressions and sum up the results.
 --
--- Part 2 - ???
+-- Part 2 - Now we need to implement precedence (by peeking into the
+-- operators stack).
 module Day18 where
 
 import Data.Char (digitToInt)
@@ -39,10 +40,6 @@ data Expression
 pushS :: Char -> String -> String
 pushS token stack = [token] ++ stack
 
--- | Pop a token onto the stack (for SYA).
-popS :: String -> (Char, String)
-popS stack = (head stack, tail stack)
-
 -- | Push a token into the queue (for SYA).
 pushQ :: Char -> String -> String
 pushQ token queue = queue ++ [token]
@@ -54,27 +51,48 @@ toPostfix infix' = toPostfixToken infix' [] []
 
 -- | Implement SYA.
 toPostfixToken :: String -> String -> String -> String
-toPostfixToken (token : tokens) output operators
-  | token == ' ' = toPostfixToken tokens output operators
-  | token == '+' = toPostfixToken tokens output (pushS token operators)
-  | token == '*' = toPostfixToken tokens output (pushS token operators)
-  | token == '(' = toPostfixToken tokens output (pushS token operators)
-  | token == ')' = toPostfixToken tokens output' operators'
-  | otherwise = toPostfixToken tokens (pushQ token output) operators
+toPostfixToken (' ':tokens) output operators = toPostfixToken tokens output operators
+toPostfixToken ('+':tokens) output operators = toPostfixToken tokens output (pushS '+' operators)
+toPostfixToken ('*':tokens) output operators = toPostfixToken tokens output (pushS '*' operators)
+toPostfixToken ('(':tokens) output operators = toPostfixToken tokens output (pushS '(' operators)
+toPostfixToken (')':tokens) output operators = toPostfixToken tokens output' operators'
   where
     (output', operators') = toPostfixToken' output operators
+toPostfixToken (token:tokens) output operators = toPostfixToken tokens (pushQ token output) operators
 toPostfixToken [] output [] = output
-toPostfixToken [] output operators = toPostfixToken [] (pushQ o output) os
-  where
-    (o, os) = popS operators
+toPostfixToken [] output (o:operators) = toPostfixToken [] (pushQ o output) operators
 
 -- | Implement SYA.
 toPostfixToken' :: String -> String -> (String, String)
-toPostfixToken' output'' operators''
-  | head operators'' == '(' = (output'', snd $ popS operators'')
-  | otherwise = toPostfixToken' (pushQ o output'') os
+toPostfixToken' output ('(':operators) = (output, operators)
+toPostfixToken' output (o:operators) = toPostfixToken' (pushQ o output) operators
+toPostfixToken' _ [] = error "toPostfixToken': Unexpected pattern match"
+
+-- | Same as above, but for part2.
+toPostfix2 :: String -> String
+toPostfix2 infix' = toPostfixToken2 infix' [] []
+
+-- | Implement SYA.
+-- | Same as above, but for part2.
+toPostfixToken2 :: String -> String -> String -> String
+toPostfixToken2 (' ':tokens) output operators = toPostfixToken2 tokens output operators
+toPostfixToken2 ('+':tokens) output ('+':operators) = toPostfixToken2 tokens (pushQ '+' output) (pushS '+' operators)
+toPostfixToken2 ('+':tokens) output operators = toPostfixToken2 tokens output (pushS '+' operators)
+toPostfixToken2 ('*':tokens) output ('+':operators) = toPostfixToken2 tokens (pushQ '+' output) (pushS '*' operators)
+toPostfixToken2 ('*':tokens) output operators = toPostfixToken2 tokens output (pushS '*' operators)
+toPostfixToken2 ('(':tokens) output operators = toPostfixToken2 tokens output (pushS '(' operators)
+toPostfixToken2 (')':tokens) output operators = toPostfixToken2 tokens output' operators'
   where
-    (o, os) = popS operators''
+    (output', operators') = toPostfixToken2' output operators
+toPostfixToken2 (token:tokens) output operators = toPostfixToken2 tokens (pushQ token output) operators
+toPostfixToken2 [] output [] = output
+toPostfixToken2 [] output (o:operators) = toPostfixToken2 [] (pushQ o output) operators
+
+-- | Same as above, but for part2.
+toPostfixToken2' :: String -> String -> (String, String)
+toPostfixToken2' output ('(':operators) = (output, operators)
+toPostfixToken2' output (o:operators) = toPostfixToken2' (pushQ o output) operators
+toPostfixToken2' _ [] = error "toPostfixToken': Unexpected pattern match"
 
 -- | Turn a postfix/RPN string into an expression AST.
 toExpression :: String -> Expression
@@ -89,20 +107,7 @@ toExpression postfix = fst $ go (reverse postfix)
         (right, tokens'') = go tokens'
     go [] = (Nil, [])
 
--- | Turn a postfix/RPN string into an expression AST (part1).
-toExpression' :: String -> Expression
-toExpression' postfix = fst $ go (reverse postfix)
-  where
-    go (token : tokens)
-      | token == '+' = (Add left right, tokens'')
-      | token == '*' = (Mul left right, tokens'')
-      | otherwise = (Val (digitToInt token), tokens)
-      where
-        (left, tokens') = go tokens
-        (right, tokens'') = go tokens'
-    go [] = (Nil, [])
-
--- | Reverse a/the give postfix/RPN string (to make the operators
+-- | Reverse a/the give expression string (to make the operators
 -- asscociate to the left). Note: For this to work we need to flip
 -- the parenthis.
 reverse' :: String -> String
@@ -117,11 +122,11 @@ input filename = map processLine $ lines $ inputRaw filename
   where
     processLine l = toExpression $ toPostfix $ reverse' l
 
--- | Read the input file.
-input' :: String -> [Expression]
-input' filename = map processLine $ lines $ inputRaw filename
+-- | Read the input file (part2).
+input2 :: String -> [Expression]
+input2 filename = map processLine $ lines $ inputRaw filename
   where
-    processLine l = toExpression' $ toPostfix $ reverse' l
+    processLine l = toExpression $ toPostfix2 $ reverse' l
 
 -- | (Recursively) Evaluate an expression.
 eval :: Expression -> Int
