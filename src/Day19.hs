@@ -40,18 +40,18 @@ import Text.Regex.PCRE ((=~))
 import Util (inputRaw)
 import Prelude
 
-data SateliteImage = Sateliteimage
-  { regex :: String,
-    messages :: [String]
-  }
+-- | The image.
+data SateliteImage = SateliteImage String [String]
+  deriving (Eq, Show)
 
+-- | Read the input file and return the image.
 input :: String -> SateliteImage
-input filename = Sateliteimage {regex = regex', messages = messages'}
+input filename = SateliteImage regex messages
   where
-    messages' = lines $ inputRaw (filename ++ "-messages")
-    rules' = lines $ inputRaw (filename ++ "-rules")
-    regex' = "^(?(DEFINE)" ++ regexRules ++ ")(?P>r0)$"
-    regexRules = intercalate "" (map processRules rules')
+    messages = lines $ inputRaw (filename ++ "-messages")
+    rules = lines $ inputRaw (filename ++ "-rules")
+    regex = "^(?(DEFINE)" ++ regexRules ++ ")(?P>r0)$"
+    regexRules = intercalate "" (map processRules rules)
       where
         rid l = head $ splitOn ":" l
         processRules l
@@ -63,8 +63,16 @@ input filename = Sateliteimage {regex = regex', messages = messages'}
             ids = map (\is -> splitOn " " (strip is)) $ splitOn "|" ((splitOn ":" l) !! 1)
             p is = "(" ++ (intercalate "" (map (\i -> "(?P>r" ++ i ++ ")") is)) ++ ")"
 
-part1 :: SateliteImage -> Int
-part1 image = length $ filter (== True) $ map (\m -> (m =~ (regex image)) :: Bool) (messages image)
+-- | Return all matching messages.
+solve :: SateliteImage -> [String]
+solve (SateliteImage regex messages) = map fst $ filter snd matches
+  where
+    matches = zip messages $ map (\m -> (=~) m regex :: Bool) messages
 
+-- | Solve part1.
+part1 :: SateliteImage -> Int
+part1 image = length $ solve image
+
+-- | Solve part2.
 part2 :: SateliteImage -> Int
-part2 image = length (messages image)
+part2 (SateliteImage _ messages) = length messages

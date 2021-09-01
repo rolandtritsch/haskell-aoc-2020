@@ -7,8 +7,8 @@ run :: IO ()
 run = hspec $ do
   describe "input" $ do
     it "input" $ do
-      let expected = input "./input/Day19p1test.txt"
-      messages expected `shouldBe` ["ababbb","bababa","abbbab","aaabbb","aaaabbb"]
+      let (SateliteImage _ messages) = input "./input/Day19p1test.txt"
+      messages `shouldBe` ["ababbb","bababa","abbbab","aaabbb","aaaabbb"]
 
   describe "part1" $ do
     it "testcases" $ do
@@ -17,9 +17,34 @@ run = hspec $ do
     it "puzzle" $ do
       part1 (input "./input/Day19p1.txt") `shouldBe` 124
 
+  describe "solve" $ do
+    it "testcases - part1" $ do
+      let expected = ["bbabbbbaabaabba","ababaaaaaabaaab","ababaaaaabbbaba"]
+      let image = input "./input/Day19p2test.txt"
+      solve image `shouldBe` expected 
+
+    it "testcases - part2" $ do
+      let expected = [
+            "bbabbbbaabaabba",
+            "babbbbaabbbbbabbbbbbaabaaabaaa",
+            "aaabbbbbbaaaabaababaabababbabaaabbababababaaa",
+            "bbbbbbbaaaabbbbaaabbabaaa",
+            "bbbababbbbaaaaaaaabbababaaababaabab",
+            "ababaaaaaabaaab",
+            "ababaaaaabbbaba",
+            "baabbaaaabbaaaababbaababb",
+            "abbbbabbbbaaaababbbbbbaaaababb",
+            "aaaaabbaabaaaaababaa",
+            "aaaabbaabbaaaaaaabbbabbbaaabbaabaaa",
+            "aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
+            ]
+      let image = input "./input/Day19p2test2.txt"
+      solve image `shouldBe` expected 
+
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day19p1test.txt") `shouldBe` 5
+      part1 (input "./input/Day19p2test.txt") `shouldBe` 3
+      part1 (input "./input/Day19p2test2.txt") `shouldBe` 6
 
     it "puzzle" $ do
-      part2 (input "./input/Day19p1.txt") `shouldBe` 368
+      part1 (input "./input/Day19p2.txt") `shouldBe` 142
