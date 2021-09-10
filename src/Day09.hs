@@ -34,6 +34,15 @@ check xmas preamble = not (null pairs)
     ns = take preamble xmas
     pairs = [(x, y) | x <- ns, y <- ns, x > y, x + y == n]
 
+-- | Solve part1.
+part1 :: XMAS -> Int
+part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
+  where
+    go ns p False = ns !! p
+    go ns p True = go ns' p (check ns' p)
+      where
+        ns' = tail ns
+
 -- | Return the encryption weakness.
 findEncryptionWeakness :: Int -> [Int] -> (Bool, [Int])
 findEncryptionWeakness invalidNumber (n:numbers) = go (n, [n]) numbers
@@ -46,15 +55,6 @@ findEncryptionWeakness invalidNumber (n:numbers) = go (n, [n]) numbers
       | n' == invalidNumber = (True, ns')
       | otherwise = (False, numbers)
 findEncryptionWeakness _ [] = (False, [])
-
--- | Solve part1.
-part1 :: XMAS -> Int
-part1 (XMAS preamble numbers) = go numbers preamble (check numbers preamble)
-  where
-    go ns p False = ns !! p
-    go ns p True = go ns' p (check ns' p)
-      where
-        ns' = tail ns
 
 -- | Solve part2.
 part2 :: XMAS -> Int
