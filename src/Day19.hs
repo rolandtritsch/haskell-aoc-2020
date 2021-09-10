@@ -30,13 +30,15 @@
 -- Part 1 - Go through all messages, match them against the regex and
 -- count the number of matches.
 --
--- Part 2 - ???
+-- Part 2 - There was nothing to do. The implementation for part1
+-- solves part2 (just added some/the testcases).
 module Day19 where
 
 import Data.List (intercalate, isSuffixOf)
 import Data.List.Split (splitOn)
 import Data.String.Utils (strip)
-import Text.Regex.PCRE ((=~))
+import Data.Text (pack)
+import Text.Regex.Pcre2 (matches)
 import Util (inputRaw)
 import Prelude
 
@@ -51,7 +53,7 @@ input filename = SateliteImage regex messages
     messages = lines $ inputRaw (filename ++ "-messages")
     rules = lines $ inputRaw (filename ++ "-rules")
     regex = "^(?(DEFINE)" ++ regexRules ++ ")(?P>r0)$"
-    regexRules = intercalate "" (map processRules rules)
+    regexRules = intercalate "" $ map processRules rules
       where
         rid l = head $ splitOn ":" l
         processRules l
@@ -65,9 +67,9 @@ input filename = SateliteImage regex messages
 
 -- | Return all matching messages.
 solve :: SateliteImage -> [String]
-solve (SateliteImage regex messages) = map fst $ filter snd matches
+solve (SateliteImage regex messages) = map fst $ filter snd matches'
   where
-    matches = zip messages $ map (\m -> (=~) m regex :: Bool) messages
+    matches' = zip messages $ map (matches (pack regex)) $ map pack messages
 
 -- | Solve part1.
 part1 :: SateliteImage -> Int
@@ -75,4 +77,4 @@ part1 image = length $ solve image
 
 -- | Solve part2.
 part2 :: SateliteImage -> Int
-part2 (SateliteImage _ messages) = length messages
+part2 = part1

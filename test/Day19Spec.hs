@@ -23,6 +23,13 @@ run = hspec $ do
       let image = input "./input/Day19p2test.txt"
       solve image `shouldBe` expected 
 
+    it "testcases - part2 (single)" $ do
+      let expected = [
+            "babbbbaabbbbbabbbbbbaabaaabaaa"
+            ]
+      let (SateliteImage rules _) = input "./input/Day19p2test2.txt"
+      solve (SateliteImage rules expected) `shouldBe` expected
+
     it "testcases - part2" $ do
       let expected = [
             "bbabbbbaabaabba",
@@ -43,8 +50,8 @@ run = hspec $ do
 
   describe "part2" $ do
     it "testcases" $ do
-      part1 (input "./input/Day19p2test.txt") `shouldBe` 3
-      part1 (input "./input/Day19p2test2.txt") `shouldBe` 6
+      part2 (input "./input/Day19p2test.txt") `shouldBe` 3
+      part2 (input "./input/Day19p2test2.txt") `shouldBe` 12
 
     it "puzzle" $ do
-      part1 (input "./input/Day19p2.txt") `shouldBe` 142
+      part2 (input "./input/Day19p2.txt") `shouldBe` 228
