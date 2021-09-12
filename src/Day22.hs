@@ -24,6 +24,7 @@ type Card = Int
 data Game = Game [Card] [Card]
   deriving (Eq, Show)
 
+-- | Read the input file and return the game to play.
 input :: String -> Game
 input filename = Game player1' player2'
   where
@@ -32,9 +33,11 @@ input filename = Game player1' player2'
     buildDeck (match : prefix : _) = map read $ init $ splitOn "\n" $ fromJust $ stripPrefix prefix match
     buildDeck _ = error "Bad deck"
 
+-- | Return/Calculate the score for a given deck. 
 score :: [Int] -> Int
 score deck = sum $ map (\(a, b) -> a * b) $ zip deck (reverse [1 .. (length deck)])
 
+-- | Play one round, recursively (until we are done). 
 playRound :: Game -> Game
 playRound game@(Game player1 player2)
   | null player1 || null player2 = game
@@ -47,6 +50,7 @@ playRound game@(Game player1 player2)
           | card1 > card2 = Game (deck1 ++ [card1, card2]) deck2
           | otherwise = Game deck1 (deck2 ++ [card2, card1])
 
+-- | Solve part1.
 part1 :: Game -> Int
 part1 game = winingScore done1 done2
   where
@@ -55,5 +59,6 @@ part1 game = winingScore done1 done2
     winingScore _ _ = 0
     (Game done1 done2) = playRound game
 
+-- | Solve part2.
 part2 :: Game -> Int
 part2 (Game player1 _) = length player1
