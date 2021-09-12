@@ -7,7 +7,8 @@ run :: IO ()
 run = hspec $ do
   describe "input" $ do
     it "input" $ do
-      length (player1 (input "./input/Day22p1test.txt")) `shouldBe` 5
+      let (Game player1 _) = input "./input/Day22p1test.txt"
+      length player1 `shouldBe` 5
 
   describe "part1" $ do
     it "testcases" $ do

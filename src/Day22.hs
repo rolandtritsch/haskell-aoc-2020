@@ -15,13 +15,14 @@ import Data.List (stripPrefix)
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import Text.Regex.PCRE ((=~))
+
 import Util (inputRaw)
 import Prelude
 
-data Game = Game
-  { player1 :: [Int],
-    player2 :: [Int]
-  }
+type Card = Int
+
+data Game = Game [Card] [Card]
+  deriving (Eq, Show)
 
 input :: String -> Game
 input filename = Game player1' player2'
@@ -35,24 +36,24 @@ score :: [Int] -> Int
 score deck = sum $ map (\(a, b) -> a * b) $ zip deck (reverse [1 .. (length deck)])
 
 playRound :: Game -> Game
-playRound game
-  | null (player1 game) || null (player2 game) = game
+playRound game@(Game player1 player2)
+  | null player1 || null player2 = game
   | otherwise = playRound nextGame
   where
-    cards = (head (player1 game), head (player2 game))
-    nextGame = playCards cards (tail (player1 game)) (tail (player2 game))
+    cards = (head player1, head player2)
+    nextGame = playCards cards (tail player1) (tail player2)
       where
         playCards (card1, card2) deck1 deck2
-          | card1 > card2 = Game {player1 = deck1 ++ [card1, card2], player2 = deck2}
-          | otherwise = Game {player1 = deck1, player2 = deck2 ++ [card2, card1]}
+          | card1 > card2 = Game (deck1 ++ [card1, card2]) deck2
+          | otherwise = Game deck1 (deck2 ++ [card2, card1])
 
 part1 :: Game -> Int
-part1 game = winingScore (player1 done) (player2 done)
+part1 game = winingScore done1 done2
   where
     winingScore deck1 [] = score deck1
     winingScore [] deck2 = score deck2
     winingScore _ _ = 0
-    done = playRound game
+    (Game done1 done2) = playRound game
 
 part2 :: Game -> Int
-part2 game = length (player1 game)
+part2 (Game player1 _) = length player1
