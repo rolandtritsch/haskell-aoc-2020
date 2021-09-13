@@ -18,7 +18,8 @@
 module Day24 where
 
 import Data.List (group, sort)
-import Text.Regex.PCRE ((=~))
+import Data.Text (pack, unpack)
+import Text.Regex.Pcre2 (matchAll)
 import Util (inputRaw)
 import Prelude
 
@@ -28,15 +29,14 @@ type Steps = [Step]
 
 type Tiles = [Steps]
 
-data Position = Position Int Int deriving (Eq, Ord)
+data Position = Position Int Int
+  deriving (Eq, Ord)
 
 -- | read the input file.
 input :: String -> Tiles
 input filename = map processTile $ lines $ inputRaw filename
   where
-    processTile line = map head steps
-      where
-        steps = line =~ "(e|se|sw|w|nw|ne)" :: [[String]]
+    processTile line = map unpack $ matchAll (pack "(e|se|sw|w|nw|ne)") (pack line)
 
 -- | walk a step (until there are no more steps)
 walk :: Steps -> Position -> Position
