@@ -23,9 +23,9 @@ module Day21 where
 import Data.List (intercalate, nub, sortOn)
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
-import Data.Maybe (fromJust)
 import Data.String.Utils (strip)
-import qualified Text.Regex as R
+import Data.Text (pack, unpack)
+import Text.Regex.Pcre2 (captures)
 
 import Prelude
 import Util (inputRaw)
@@ -43,9 +43,8 @@ input filename = foldl merge M.empty $ concat $ map processLine contents
     contents = lines $ inputRaw filename
     processLine l = map (\a -> (strip a, [ingredients])) allergens
       where
-        linePattern = R.mkRegex "^(.*) \\(contains (.*)\\)$"
-        tokens = fromJust $ R.matchRegex linePattern l
-        (ingredients, allergens) = (splitOn " " (tokens !! 0), splitOn "," (tokens !! 1))
+        tokens = tail $ map unpack $ captures (pack "^(.*) \\(contains (.*)\\)$") (pack l)
+        (ingredients, allergens) = (splitOn " " (tokens !! 0), splitOn ", " (tokens !! 1))
     merge m (a, is) = M.insertWith (++) a is m
 
 -- | Intersect two lists. Return common elements.
