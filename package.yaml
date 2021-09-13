@@ -27,9 +27,6 @@ library:
   - algebra
   - MissingH
   - containers
-  - regex-base
-  - regex-compat
-  - regex-pcre
   - pcre2
   - split
   - text
