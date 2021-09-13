@@ -11,10 +11,9 @@
 -- Part 2 - ???
 module Day22 where
 
-import Data.List (stripPrefix)
 import Data.List.Split (splitOn)
-import Data.Maybe (fromJust)
-import Text.Regex.PCRE ((=~))
+import Data.Text (pack, unpack)
+import Text.Regex.Pcre2 (matchAll)
 
 import Util (inputRaw)
 import Prelude
@@ -29,9 +28,8 @@ input :: String -> Game
 input filename = Game player1' player2'
   where
     (player1', player2') = (buildDeck p1, buildDeck p2)
-    (p1 : p2 : _) = (inputRaw filename) =~ "(Player [12]:\n)([0-9]*\n)*" :: [[String]]
-    buildDeck (match : prefix : _) = map read $ init $ splitOn "\n" $ fromJust $ stripPrefix prefix match
-    buildDeck _ = error "Bad deck"
+    (p1 : p2 : _) = map unpack $ matchAll (pack "(Player [12]:\n)([0-9]*\n)*") (pack $ inputRaw filename)
+    buildDeck p = map read $ init $ tail $ splitOn "\n" p
 
 -- | Return/Calculate the score for a given deck. 
 score :: [Int] -> Int
