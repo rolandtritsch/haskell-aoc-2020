@@ -20,7 +20,8 @@ module Day04 where
 import Data.List (intercalate)
 import Data.List.Split (splitOn)
 import Data.Maybe
-import Text.Regex (Regex, matchRegex, mkRegex)
+import Data.Text (pack, unpack)
+import Text.Regex.Pcre2 (captures, matches)
 import Util (inputRaw)
 import Prelude
 
@@ -71,48 +72,48 @@ isValid2 p =
 isValidBirthYear :: Maybe String -> Bool
 isValidBirthYear byr = if isJust byr then check (fromJust byr) else False
   where
-    p = mkRegex "^([0-9]*)$"
+    p = "^([0-9]*)$"
     check f = if checkFormatted f p then checkValid f p else False
     checkValid f' p' = checkValidRange value
       where
         value = read (result !! 0) :: Int
-        (Just result) = matchRegex p' f'
+        result = tail $ map unpack $ captures (pack p') (pack f')
     checkValidRange v = v >= 1920 && v <= 2002
 
 -- | The rule that makes the issue year valid.
 isValidIssueYear :: Maybe String -> Bool
 isValidIssueYear iyr = if isJust iyr then check (fromJust iyr) else False
   where
-    p = mkRegex "^([0-9]*)$"
+    p = "^([0-9]*)$"
     check f = if checkFormatted f p then checkValid f p else False
     checkValid f' p' = checkValidRange value
       where
         value = read (result !! 0) :: Int
-        (Just result) = matchRegex p' f'
+        result = tail $ map unpack $ captures (pack p') (pack f')
     checkValidRange v = v >= 2010 && v <= 2020
 
 -- | The rule that makes the experation year valid.
 isValidExpirationYear :: Maybe String -> Bool
 isValidExpirationYear eyr = if isJust eyr then check (fromJust eyr) else False
   where
-    p = mkRegex "^([0-9]*)$"
+    p = "^([0-9]*)$"
     check f = if checkFormatted f p then checkValid f p else False
     checkValid f' p' = checkValidRange value
       where
         value = read (result !! 0) :: Int
-        (Just result) = matchRegex p' f'
+        result = tail $ map unpack $ captures (pack p') (pack f')
     checkValidRange v = v >= 2020 && v <= 2030
 
 -- | The rule that makes the height valid.
 isValidHeight :: Maybe String -> Bool
 isValidHeight hgt = if isJust hgt then check (fromJust hgt) else False
   where
-    p = mkRegex "^([0-9]*)(cm|in)$"
+    p = "^([0-9]*)(cm|in)$"
     check f = if checkFormatted f p then checkValid f p else False
     checkValid f' p' = checkValidRange value unit
       where
         (value, unit) = (read (result !! 0) :: Int, result !! 1)
-        (Just result) = matchRegex p' f'
+        result = tail $ map unpack $ captures (pack p') (pack f')
     checkValidRange v "cm" = v >= 150 && v <= 193
     checkValidRange v "in" = v >= 59 && v <= 76
     checkValidRange _ _ = False
@@ -121,29 +122,26 @@ isValidHeight hgt = if isJust hgt then check (fromJust hgt) else False
 isValidHairColor :: Maybe String -> Bool
 isValidHairColor hcl = if isJust hcl then check (fromJust hcl) else False
   where
-    p = mkRegex "^(#[a-f0-9]*)$"
+    p = "^(#[a-f0-9]*)$"
     check f = checkFormatted f p
 
 -- | The rule that makes the eye color valid.
 isValidEyeColor :: Maybe String -> Bool
 isValidEyeColor ecl = if isJust ecl then check (fromJust ecl) else False
   where
-    p = mkRegex "^(amb|blu|brn|gry|grn|hzl|oth)$"
+    p = "^(amb|blu|brn|gry|grn|hzl|oth)$"
     check f = checkFormatted f p
 
 -- | The rule that makes the passport id valid.
 isValidPassportID :: Maybe String -> Bool
 isValidPassportID pid = if isJust pid then check (fromJust pid) else False
   where
-    p = mkRegex "^([0-9]*)$"
+    p = "^([0-9]*)$"
     check f = checkFormatted f p
 
 -- | Make sure the field is formatted correctly.
-checkFormatted :: String -> Regex -> Bool
-checkFormatted field pattern = isMatch $ matchRegex pattern field
-  where
-    isMatch (Just _) = True
-    isMatch _ = False
+checkFormatted :: String -> String -> Bool
+checkFormatted field pattern = matches (pack pattern) (pack field)
 
 -- Read the input file.
 input :: String -> [Passport]
