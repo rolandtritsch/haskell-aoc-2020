@@ -57,6 +57,24 @@ part1 game = winingScore done1 done2
     winingScore _ _ = 0
     (Game done1 done2) = playRound game
 
+-- | Play one round, recursively (until we are done).
+playRound2 :: Game -> Game
+playRound2 game@(Game player1 player2)
+  | null player1 || null player2 = game
+  | otherwise = playRound2 nextGame
+  where
+    cards = (head player1, head player2)
+    nextGame = playCards cards (tail player1) (tail player2)
+      where
+        playCards (card1, card2) deck1 deck2
+          | card1 > card2 = Game (deck1 ++ [card1, card2]) deck2
+          | otherwise = Game deck1 (deck2 ++ [card2, card1])
+
 -- | Solve part2.
 part2 :: Game -> Int
-part2 (Game player1 _) = length player1
+part2 game = winingScore done1 done2
+  where
+    winingScore deck1 [] = score deck1
+    winingScore [] deck2 = score deck2
+    winingScore _ _ = 0
+    (Game done1 done2) = playRound2 game
