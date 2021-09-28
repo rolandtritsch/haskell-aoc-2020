@@ -18,6 +18,11 @@ import Text.Regex.Pcre2 (matchAll)
 import Util (inputRaw)
 import Prelude
 
+import Debug.Trace (trace)
+
+trace' :: Show a => String -> a -> a
+trace' message f = trace (message ++ " (" ++ show f ++ ")") f
+
 type Card = Int
 
 data Game = Game [Card] [Card]
@@ -35,11 +40,15 @@ input filename = Game player1' player2'
 score :: [Int] -> Int
 score deck = sum $ map (\(a, b) -> a * b) $ zip deck (reverse [1 .. (length deck)])
 
--- | Play one round, recursively (until we are done). 
-playRound :: Game -> Game
-playRound game@(Game player1 player2)
+-- | Play game (by playing rounds recursively)
+playGame :: Game -> Game
+playGame game@(Game player1 player2)
   | null player1 || null player2 = game
-  | otherwise = playRound nextGame
+  | otherwise = playGame $ playRound game
+
+-- | Play one round.
+playRound :: Game -> Game
+playRound (Game player1 player2) = nextGame
   where
     cards = (head player1, head player2)
     nextGame = playCards cards (tail player1) (tail player2)
@@ -55,28 +64,38 @@ part1 game = winingScore done1 done2
     winingScore deck1 [] = score deck1
     winingScore [] deck2 = score deck2
     winingScore _ _ = 0
-    (Game done1 done2) = playRound game
+    (Game done1 done2) = playGame game
 
--- | Play one round, recursively (until we are done).
-playRound2 :: [Game] -> Game -> Game
-playRound2 previous game@(Game player1@(card1:deck1) player2@(card2:deck2))
-  | elem game previous = Game (player1 ++ player2) []
-  | otherwise = playRound2 nextPrevious nextGame
+-- | Play game (by playing rounds recursively) (part2).
+playGame2 :: [Game] -> Game -> ([Game], Game)
+playGame2 previous game@(Game player1 player2)
+  | elem game previous = (previous, Game (player1 ++ player2) [])
+  | null player1 || null player2 = (previous, game)
+  | otherwise = playGame2 (game : previous) $ playRound2 game
+
+-- | Play one round (part2).
+playRound2 :: Game -> Game
+playRound2 game@(Game player1 player2) = nextGame
   where
-    nextPrevious = game : previous 
-    nextGame = playCards
+    nextGame = playCards (head player1) (head player2) (tail player1) (tail player2)
       where
-        playCards
-          | card1 >= length deck1 && card2 >= length deck2 = Game nextDeck1 nextDeck2
+        playCards card1 card2 deck1 deck2
+          | card1 <= (length deck1) && card2 <= (length deck2) = playSubGame2 game 
           | card1 > card2 = Game (deck1 ++ [card1, card2]) deck2
           | otherwise = Game deck1 (deck2 ++ [card2, card1])
-            where
-              game' = playRound2 [] (Game deck1 deck2)
-              (nextDeck1, nextDeck2) = nextDeck game'
-              nextDeck (Game _ []) = (deck1 ++ [card1, card2], deck2)
-              nextDeck (Game [] _) = (deck1, deck2 ++ [card2, card1])
-              nextDeck _ = error "nextDeck: Unexpected pattern match"
-playRound2 _ game = game
+
+-- Play a subgame (part2).
+playSubGame2 :: Game -> Game
+playSubGame2 (Game player1 player2) = nextGame
+  where
+    (_, result) = playGame2 [] (Game (tail player1) (tail player2))
+    nextGame = playCards (head player1) (head player2) (tail player1) (tail player2)
+      where
+        playCards card1 card2 deck1 deck2
+          | player1wins result = Game (deck1 ++ [card1, card2]) deck2
+          | otherwise = Game deck1 (deck2 ++ [card2, card1])
+        player1wins (Game _ []) = True
+        player1wins _ = False
 
 -- | Solve part2.
 part2 :: Game -> Int
@@ -85,4 +104,4 @@ part2 game = winingScore done1 done2
     winingScore deck1 [] = score deck1
     winingScore [] deck2 = score deck2
     winingScore _ _ = 0
-    (Game done1 done2) = playRound2 [] game
+    (_, (Game done1 done2)) = playGame2 [] game
