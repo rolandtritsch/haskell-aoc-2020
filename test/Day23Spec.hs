@@ -7,7 +7,8 @@ run :: IO ()
 run = hspec $ do
   describe "input" $ do
     it "input" $ do
-      length (cups (input "./input/Day23p1test.txt")) `shouldBe` 9
+      let (State _ cups _ _) = input "./input/Day23p1test.txt"
+      length cups `shouldBe` 9
 
   describe "removeCups" $ do
     it "move1" $ do
