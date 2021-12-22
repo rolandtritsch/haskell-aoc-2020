@@ -31,7 +31,7 @@ import qualified Day13.Part2 as D13P2
 import qualified Day14.Part1 as D14P1
 import qualified Day14.Part2 as D14P2
 import qualified Day15.Part1 as D15P1
-import qualified Day15.Part2 as D15P2
+-- import qualified Day15.Part2 as D15P2
 import qualified Day16.Part1 as D16P1
 import qualified Day16.Part2 as D16P2
 import qualified Day17.Part1 as D17P1
@@ -86,7 +86,7 @@ main = do
   D14P1.main
   D14P2.main
   D15P1.main
-  D15P2.main
+--  D15P2.main
   D16P1.main
   D16P2.main
   D17P1.main
