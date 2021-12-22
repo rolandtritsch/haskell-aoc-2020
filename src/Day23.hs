@@ -14,9 +14,18 @@
 -- The alternative was to use a lazy, circular linked-list, but then the
 -- cut/paste becomes interesting.
 --
--- Part 1 - ???
+-- Part 1 - So far so good.
 --
--- Part 2 - ???
+-- Part 2 - Big surprise: The (initial) list based solution does not work. Way
+-- to slow. To get a grip in this I ...
+--
+-- * ... introduced a CircularList type
+-- * ... that was (initially) using a list (means we get no performance
+-- improvements, but we get a nice interface)
+-- * ... and then I experimented with various data-structures to improve
+-- the performance
+--
+-- At the end the winner was ...
 module Day23 where
 
 import Data.Char (digitToInt)
@@ -81,7 +90,7 @@ executeMoves state@(State 0 _ _ _) = state
 executeMoves state = executeMoves (actions state)
 
 -- | Collect the cups after cup 'label'
-collect :: Int -> [Int] -> [Int]
+collect :: Int -> [Cup] -> [Cup]
 collect label cups = rest' ++ (init head')
   where
     (head', rest') = splitAt (where' + 1) cups
@@ -97,5 +106,20 @@ part1 state = ints2Int $ collect 1 cups
   where
     (State _ cups _ _) = executeMoves state
 
+-- | Take a list of cups and add cups to get the given size.
+addCups :: Int -> [Cup] -> [Cup]
+addCups size cups = cups ++ [maximum cups + 1 .. size]
+
+-- | Collect values of the 2 ups after cup 'label'
+collect' :: Int -> [Cup] -> (Int, Int)
+collect' label cups = (cups !! (where' + 1), cups !! (where' + 2))
+  where
+    where' = fromJust $ elemIndex label cups
+
+-- | Solve part2.
 part2 :: State -> Int
-part2 (State _ cups _ _) = length cups
+part2 (State _ cups _ _) = first' * second'
+  where
+    state' = State 10000000 (addCups 1000000 cups) [] 0
+    (State _ cups' _ _) = executeMoves state'
+    (first', second') = collect' 1 cups'

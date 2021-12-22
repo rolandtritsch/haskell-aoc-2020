@@ -82,9 +82,13 @@ run = hspec $ do
     it "puzzle" $ do
       part1 (input "./input/Day23p1.txt") `shouldBe` 39564287
 
+  describe "collect'" $ do
+    it "simple" $ do
+       (collect' 1 [8,3,7,4,1,9,2,6,5]) `shouldBe` (9,2)
+
   describe "part2" $ do
     it "testcases" $ do
-      part2 (input "./input/Day23p1test.txt") `shouldBe` 9
+      part2 (input "./input/Day23p1test.txt") `shouldBe` 149245887792
 
-    it "puzzle" $ do
-      part2 (input "./input/Day23p1.txt") `shouldBe` 9
+  --   it "puzzle" $ do
+  --     part2 (input "./input/Day23p1.txt") `shouldBe` 9
