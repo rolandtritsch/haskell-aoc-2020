@@ -943,3 +943,17 @@ tests:
     dependencies:
     - haskell-aoc
     - hspec
+
+  haskell-aoc-test-circularlist:
+    main: CircularListSpec.hs
+    other-modules:
+    - CircularListSpec
+    source-dirs:
+    - test
+    ghc-options:
+    - -main-is CircularListSpec.run
+    - -O2 -threaded
+    - -Wall -Werror
+    dependencies:
+    - haskell-aoc
+    - hspec
