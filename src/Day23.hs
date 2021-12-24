@@ -11,13 +11,10 @@
 -- And that means we can *just* reorder the list in/with the last action
 -- of every move/cycle to make current the first element of the list.
 --
--- The alternative was to use a lazy, circular linked-list, but then the
--- cut/paste becomes interesting.
---
 -- Part 1 - So far so good.
 --
 -- Part 2 - Big surprise: The (initial) list based solution does not work. Way
--- to slow. To get a grip in this I ...
+-- to slow. To get a grip on this I ...
 --
 -- * ... introduced a CircularList type
 -- * ... that was (initially) using a list (means we get no performance
@@ -28,57 +25,56 @@
 -- At the end the winner was ...
 module Day23 where
 
+import CircularList
 import Data.Char (digitToInt)
-import Data.List (find, elemIndex, intercalate)
-import Data.Maybe (fromJust)
+import Data.List (intercalate)
 import Util (inputRaw)
 import Prelude
 
 type Moves = Int
-type Cup = Int
 type Pickup = Int
-type Destination = Int
 
 -- | The State to maintain between moves.
-data State = State Moves [Cup] [Pickup] Destination
+data State = State Moves CircularList [Pickup]
   deriving (Eq, Show) 
 
 -- | Read the input and return the initial state.
 input :: String -> State
-input filename = State moves' cups' [] 0
+input filename = State moves' cups' []
   where
     moves' = read first'
-    cups' = map digitToInt second'
+    cups' = CircularList 0 (map digitToInt second') []
     (first':second':_) = lines $ inputRaw filename
 
 -- | As part of a move: Remove 3 cups (and put them into pickup).
 removeCups :: State -> State
-removeCups (State moves cups _ destination) = State moves cups' pickup' destination
+removeCups (State moves cups _) = State moves cups' pickup'
   where
-    (head', rest') = splitAt 1 cups
-    pickup' = take 3 rest'
-    cups' = head' ++ drop 3 rest'
+    (cups', pickup') = foldl collectPickup (cups, []) [1..3 :: Int]
+    collectPickup (cs, ps) _ = (remove cs, ps ++ [(get . forward) cs])
 
--- | As part of a move: Select the next destination.
+-- | As part of a move: Select the next destination/current.
 selectDestination :: State -> State
-selectDestination (State moves cups pickup _) = State moves cups pickup destination'
+selectDestination (State moves cups pickup) = State moves cups' pickup
   where
-    possibleDestinations = reverse [0 .. head cups - 1] ++ [maximum cups]
-    destinationLabel' = fromJust $ find (flip elem cups) possibleDestinations
-    destination' = fromJust $ elemIndex destinationLabel' cups
+    possibleDestinations = reverse [1 .. get cups - 1] ++ [maximum (toList cups)]
+    (cups', True) = foldl moveToDestination (push cups, False) possibleDestinations
+    moveToDestination (cs, True) _ = (cs, True)
+    moveToDestination (cs, False) to = go (isIn to cs)
+      where
+        go True = (move to cs, True)
+        go False = (cs, False)
 
 -- | As part of a move: Place the cups from pickup.
 placePickupCups :: State -> State
-placePickupCups (State moves cups pickup destination) = State moves cups' [] destination
+placePickupCups (State moves cups pickup) = State moves (pop cups') []
   where
-    (head', rest') = splitAt (destination + 1) cups
-    cups' = head' ++ pickup ++ rest'
+    cups' = foldl insertPickup cups (reverse pickup)
+    insertPickup cs p = insert p cs
 
 -- | As part of a move: Determine the new current cup.
 newCurrentCup :: State -> State
-newCurrentCup (State moves cups _ _) = State (moves - 1) cups' [] 0
-  where
-    cups' = tail cups ++ [head cups]
+newCurrentCup (State moves cups _) = State (moves - 1) (forward cups) []
 
 -- | All the actions of a move.
 actions :: State -> State
@@ -86,15 +82,12 @@ actions = newCurrentCup . placePickupCups . selectDestination . removeCups
 
 -- | Execute moves (until there are no more moves to make).
 executeMoves :: State -> State
-executeMoves state@(State 0 _ _ _) = state
+executeMoves state@(State 0 _ _) = state
 executeMoves state = executeMoves (actions state)
 
 -- | Collect the cups after cup 'label'
-collect :: Int -> [Cup] -> [Cup]
-collect label cups = rest' ++ (init head')
-  where
-    (head', rest') = splitAt (where' + 1) cups
-    where' = fromJust $ elemIndex label cups
+collect :: Int -> CircularList -> [Int]
+collect label cups = (tail . toList . move label) cups
 
 -- | Turn a list of ints into an int.
 ints2Int :: [Int] -> Int
@@ -104,22 +97,21 @@ ints2Int ints = read $ intercalate "" $ map show ints
 part1 :: State -> Int
 part1 state = ints2Int $ collect 1 cups
   where
-    (State _ cups _ _) = executeMoves state
+    (State _ cups _) = executeMoves state
 
 -- | Take a list of cups and add cups to get the given size.
-addCups :: Int -> [Cup] -> [Cup]
-addCups size cups = cups ++ [maximum cups + 1 .. size]
+addCups :: Int -> CircularList -> CircularList
+addCups size (CircularList _ cups stack) = CircularList 0 (cups ++ [maximum cups + 1 .. size]) stack
 
 -- | Collect values of the 2 ups after cup 'label'
-collect' :: Int -> [Cup] -> (Int, Int)
-collect' label cups = (cups !! (where' + 1), cups !! (where' + 2))
-  where
-    where' = fromJust $ elemIndex label cups
+collect' :: Int -> CircularList -> (Int, Int)
+collect' label cups = ((get . forward . move label) cups, (get . forward . forward . move label) cups)
 
 -- | Solve part2.
 part2 :: State -> Int
-part2 (State _ cups _ _) = first' * second'
+part2 (State _ cups _) = first' * second'
   where
-    state' = State 10000000 (addCups 1000000 cups) [] 0
-    (State _ cups' _ _) = executeMoves state'
+    -- state' = State 100000 (addCups 10000 cups) []
+    state' = State 10000000 (addCups 1000000 cups) []
+    (State _ cups' _) = executeMoves state'
     (first', second') = collect' 1 cups'
