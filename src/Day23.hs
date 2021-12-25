@@ -25,7 +25,7 @@
 -- At the end the winner was ...
 module Day23 where
 
-import CircularList
+import qualified CircularList as CL
 import Data.Char (digitToInt)
 import Data.List (intercalate)
 import Util (inputRaw)
@@ -35,7 +35,7 @@ type Moves = Int
 type Pickup = Int
 
 -- | The State to maintain between moves.
-data State = State Moves CircularList [Pickup]
+data State = State Moves CL.CircularList [Pickup]
   deriving (Eq, Show) 
 
 -- | Read the input and return the initial state.
@@ -43,7 +43,7 @@ input :: String -> State
 input filename = State moves' cups' []
   where
     moves' = read first'
-    cups' = CircularList 0 (map digitToInt second') []
+    cups' = CL.CircularList 0 (map digitToInt second') []
     (first':second':_) = lines $ inputRaw filename
 
 -- | As part of a move: Remove 3 cups (and put them into pickup).
@@ -51,30 +51,30 @@ removeCups :: State -> State
 removeCups (State moves cups _) = State moves cups' pickup'
   where
     (cups', pickup') = foldl collectPickup (cups, []) [1..3 :: Int]
-    collectPickup (cs, ps) _ = (remove cs, ps ++ [(get . forward) cs])
+    collectPickup (cs, ps) _ = (CL.remove cs, ps ++ [(CL.get . CL.forward) cs])
 
 -- | As part of a move: Select the next destination/current.
 selectDestination :: State -> State
 selectDestination (State moves cups pickup) = State moves cups' pickup
   where
-    possibleDestinations = reverse [1 .. get cups - 1] ++ [maximum (toList cups)]
-    (cups', True) = foldl moveToDestination (push cups, False) possibleDestinations
+    possibleDestinations = reverse [1 .. CL.get cups - 1] ++ [maximum (CL.toList cups)]
+    (cups', True) = foldl moveToDestination (CL.push cups, False) possibleDestinations
     moveToDestination (cs, True) _ = (cs, True)
-    moveToDestination (cs, False) to = go (isIn to cs)
+    moveToDestination (cs, False) to = go (CL.isIn to cs)
       where
-        go True = (move to cs, True)
+        go True = (CL.move to cs, True)
         go False = (cs, False)
 
 -- | As part of a move: Place the cups from pickup.
 placePickupCups :: State -> State
-placePickupCups (State moves cups pickup) = State moves (pop cups') []
+placePickupCups (State moves cups pickup) = State moves (CL.pop cups') []
   where
     cups' = foldl insertPickup cups (reverse pickup)
-    insertPickup cs p = insert p cs
+    insertPickup cs p = CL.insert p cs
 
 -- | As part of a move: Determine the new current cup.
 newCurrentCup :: State -> State
-newCurrentCup (State moves cups _) = State (moves - 1) (forward cups) []
+newCurrentCup (State moves cups _) = State (moves - 1) (CL.forward cups) []
 
 -- | All the actions of a move.
 actions :: State -> State
@@ -86,8 +86,8 @@ executeMoves state@(State 0 _ _) = state
 executeMoves state = executeMoves (actions state)
 
 -- | Collect the cups after cup 'label'
-collect :: Int -> CircularList -> [Int]
-collect label cups = (tail . toList . move label) cups
+collect :: Int -> CL.CircularList -> [Int]
+collect label cups = (tail . CL.toList . CL.move label) cups
 
 -- | Turn a list of ints into an int.
 ints2Int :: [Int] -> Int
@@ -100,12 +100,12 @@ part1 state = ints2Int $ collect 1 cups
     (State _ cups _) = executeMoves state
 
 -- | Take a list of cups and add cups to get the given size.
-addCups :: Int -> CircularList -> CircularList
-addCups size (CircularList _ cups stack) = CircularList 0 (cups ++ [maximum cups + 1 .. size]) stack
+addCups :: Int -> CL.CircularList -> CL.CircularList
+addCups size (CL.CircularList _ cups stack) = CL.CircularList 0 (cups ++ [maximum cups + 1 .. size]) stack
 
 -- | Collect values of the 2 ups after cup 'label'
-collect' :: Int -> CircularList -> (Int, Int)
-collect' label cups = ((get . forward . move label) cups, (get . forward . forward . move label) cups)
+collect' :: Int -> CL.CircularList -> (Int, Int)
+collect' label cups = ((CL.get . CL.forward . CL.move label) cups, (CL.get . CL.forward . CL.forward . CL.move label) cups)
 
 -- | Solve part2.
 part2 :: State -> Int

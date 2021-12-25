@@ -27,9 +27,19 @@ type Item = Int
 data CircularList = CircularList Current [Item] [Current]
   deriving (Show, Eq)
 
+-- | Make a new CircularList from a list.
+fromList :: [Int] -> CircularList
+fromList initial = CircularList 0 initial []
+
+-- | Turn the circular list into a list (from current).
+toList :: CircularList -> [Int]
+toList (CircularList current items _) = tail' ++ head'
+  where
+    (head', tail') = splitAt current items
+    
 -- | Get the length of the list.
-lengthCL :: CircularList -> Int
-lengthCL (CircularList _ items _) = length items
+size :: CircularList -> Int
+size (CircularList _ cl _) = length cl
 
 -- | Check, if list is empty.
 isEmpty :: CircularList -> Bool
@@ -70,7 +80,7 @@ insert item (CircularList current items stack) = CircularList current items' sta
 remove :: CircularList -> CircularList
 remove (CircularList _ [] _) = throw ListIsEmptyException
 remove cl@(CircularList current items stack)
-  | lengthCL cl - 1 == current = CircularList (current - 1) (tail items) stack  
+  | size cl - 1 == current = CircularList (current - 1) (tail items) stack  
   | otherwise = CircularList current items' stack
     where
       (head', tail') = splitAt (current + 1) items
@@ -84,12 +94,6 @@ move to (CircularList _ items stack) = go (elemIndex to items)
     go Nothing = throw ItemNotFoundException
     go (Just current) = CircularList current items stack
 
--- | Turn the circular list into a list (from current).
-toList :: CircularList -> [Int]
-toList (CircularList current items _) = tail' ++ head'
-  where
-    (head', tail') = splitAt current items
-    
 -- | Push the current item on the stack.
 push :: CircularList -> CircularList
 push (CircularList _ [] _) = throw ListIsEmptyException
