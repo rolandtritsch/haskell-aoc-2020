@@ -114,7 +114,7 @@ insert item cl@(CircularList current next stack)
   where
     next' = (next DV.// [(current, item)]) DV.// [(item, DV.unsafeIndex next current)]
 
--- | Remove the item after the current item from the list.
+-- | Remove the item from the list (after the current item).
 remove :: CircularList -> CircularList
 remove cl@(CircularList current next stack)
   | isEmpty cl = throw ListIsEmptyException
