@@ -22,7 +22,14 @@
 -- * ... and then I experimented with various data-structures to improve
 -- the performance
 --
--- At the end the winner was ...
+-- First I tried Data.CircularList, but that did not work either. At the end
+-- the winner was an (my own) implementation of a CircularList using a Vector
+-- that was linking the items together (single-linked list) like so ...
+--
+-- [(1000000,3), (3,5), (5,8), ...]
+--
+-- ... means that linked-list does not only express a 'contains` relationship,
+-- but also an ordering (a 'next-element` relationship).
 module Day23 where
 
 import qualified CircularList as CL
@@ -43,7 +50,7 @@ input :: String -> State
 input filename = State moves' cups' []
   where
     moves' = read first'
-    cups' = CL.CircularList 0 (map digitToInt second') []
+    cups' = CL.fromList (map digitToInt second')
     (first':second':_) = lines $ inputRaw filename
 
 -- | As part of a move: Remove 3 cups (and put them into pickup).
@@ -101,7 +108,9 @@ part1 state = ints2Int $ collect 1 cups
 
 -- | Take a list of cups and add cups to get the given size.
 addCups :: Int -> CL.CircularList -> CL.CircularList
-addCups size (CL.CircularList _ cups stack) = CL.CircularList 0 (cups ++ [maximum cups + 1 .. size]) stack
+addCups size cl = CL.fromList (cups ++ [maximum cups + 1 .. size])
+  where
+    cups = CL.toList cl
 
 -- | Collect values of the 2 ups after cup 'label'
 collect' :: Int -> CL.CircularList -> (Int, Int)
