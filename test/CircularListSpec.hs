@@ -72,19 +72,6 @@ run = hspec $ do
       let cl = fromList [1]
       (get . forward) cl `shouldBe` 1
 
-  describe "backward" $ do
-    it "simple" $ do
-      let cl = fromList [1,2]
-      (get . backward) cl `shouldBe` 2
-
-    it "empty" $ do
-      let cl = fromList []
-      evaluate (backward cl) `shouldThrow` (== ListIsEmptyException)
-
-    it "singleton" $ do
-      let cl = fromList [1]
-      (get . backward) cl `shouldBe` 1
-
   describe "insert" $ do
     it "simple" $ do
       let cl = (insert 99 . fromList) [1,2]
@@ -112,7 +99,7 @@ run = hspec $ do
       toList cl `shouldBe` [1,99,2,3]
 
     it "last" $ do
-      let cl = (forward . forward . insert 99 . backward . fromList) [1,2,3]
+      let cl = (forward . forward . insert 99 . forward . forward . fromList) [1,2,3]
       toList cl `shouldBe` [1,2,3,99]
 
   describe "remove" $ do
@@ -125,7 +112,7 @@ run = hspec $ do
       evaluate (remove cl) `shouldThrow` (== ListIsEmptyException)
 
     it "last" $ do
-      let cl = (forward . remove . backward . fromList) [1,2,3]
+      let cl = (forward . remove . forward . forward . fromList) [1,2,3]
       toList cl `shouldBe` [2,3]
 
   describe "move" $ do

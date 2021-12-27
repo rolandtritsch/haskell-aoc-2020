@@ -120,7 +120,7 @@ collect' label cups = ((CL.get . CL.forward . CL.move label) cups, (CL.get . CL.
 part2 :: State -> Int
 part2 (State _ cups _) = first' * second'
   where
-    -- state' = State 100000 (addCups 10000 cups) []
+    -- state' = State 10000 (addCups 1000 cups) []
     state' = State 10000000 (addCups 1000000 cups) []
     (State _ cups' _) = executeMoves state'
     (first', second') = collect' 1 cups'
