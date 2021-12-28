@@ -1,14 +1,18 @@
 -- |
--- A CircularList that uses a double-linked list based
--- on Data.Map for speed (Data.List is way to slow for
--- large lists).
+-- A CircularList that uses a linked list based on Data.Sequence
+-- for speed (Data.List is way to slow for large lists).
 --
--- Was thinking use something like element -> (next, previous),
--- but decided to go with to maps instead.
+-- Here are a couple of working/design assumptions ...
+--
+-- * the inital list is consecutive, means it contains the numbers
+-- from 1 to N in a/the given order. And the smallest element is 1.
+-- * to remove an element from the list the predecessor and the
+-- successor need to be re-linked. The element it-self will be marked
+-- as deleted by making it point to 0.
 module CircularList where
 
 import Control.Exception
-import qualified Data.Map as DM
+import qualified Data.Sequence as DS
 
 data ListIsEmptyException = ListIsEmptyException
   deriving (Show, Eq)
@@ -34,62 +38,67 @@ type Current = Int
 type Item = Int
 
 -- | The list.
-data CircularList = CircularList Current (DM.Map Item Item) [Current]
+data CircularList = CircularList Current (DS.Seq Item) [Current]
   deriving (Show, Eq)
 
 -- | Make a new CircularList from a list.
 fromList :: [Int] -> CircularList
-fromList [] = CircularList 0 DM.empty []
+fromList [] = CircularList 0 DS.empty []
 fromList initial = CircularList (head initial) next []
   where
-    next = DM.fromList $ zip initial (tail initial ++ [head initial])
+    next = DS.fromList $ map snd $ sortBy fst $ (0,0) : zip initial (tail initial ++ [head initial])
 
 -- | Turn the circular list into a list (from current).
 toList :: CircularList -> [Int]
-toList (CircularList current next _)
-  | DM.null next = []
-  | otherwise = current : go (next DM.! current)
+toList cl@(CircularList current next _)
+  | isEmpty cl = []
+  | otherwise = current : go (DS.index next current)
   where
     go item
       | item == current = []
-      | otherwise = item : go (next DM.! item)
+      | otherwise = item : go (DS.index next item)
     
 -- | Get the length of the list.
 size :: CircularList -> Int
-size (CircularList _ next _) = DM.size next
+size (CircularList _ next _) = DS.length next
 
 -- | Check, if list is empty.
 isEmpty :: CircularList -> Bool
 isEmpty (CircularList _ next _)
-  | DM.null next = True
+  | DS.null next = True
   | otherwise = False
 
 -- | Check, if item is in the list.
 isIn :: Int -> CircularList -> Bool
-isIn item (CircularList _ next _) = DM.member item next 
+isIn item (CircularList _ next _)
+  | item <= 1 || item >= DS.length next - 1 = False
+  | otherwise = go (DM.index next item)
+  where
+    go 0 = False
+    go _ = True
 
 -- | Get the current element.
 get :: CircularList -> Item
-get (CircularList current next _)
-  | DM.null next = throw ListIsEmptyException
+get cl@(CircularList current _ _)
+  | isEmpty cl = throw ListIsEmptyException
   | otherwise = current
 
 -- | Moving current forward.
 forward :: CircularList -> CircularList
-forward (CircularList current next stack)
-  | DM.null next = throw ListIsEmptyException
-  | otherwise = CircularList (next DM.! current) next stack
-
+forward cl@(CircularList current next stack)
+  | isEmpty cl = throw ListIsEmptyException
+  | otherwise = CircularList (DS.index next current) next stack
 
 -- | Insert item into list (after current).
 --
 -- Note: The new item cannot be already in the list.
 insert :: Int -> CircularList -> CircularList
-insert item (CircularList current next stack)
-  | DM.null next = CircularList item (DM.singleton item item) [] 
-  | DM.member item next = throw AlreadyExistsException
+insert item cl@(CircularList current next stack)
+  | isEmpty cl = CircularList item initial' [] 
+  | isIn item cl = throw AlreadyExistsException
   | otherwise = CircularList current next' stack
   where
+    initial' = DS.fromList $ replicate item 0 ++ [item]
     next' = DM.insert item (next DM.! current) $ DM.insert current item next
 
 -- | Remove the item after the current item from the list.
