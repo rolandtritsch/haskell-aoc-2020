@@ -21,15 +21,6 @@
 -- improvements, but we get a nice interface)
 -- * ... and then I experimented with various data-structures to improve
 -- the performance
---
--- First I tried Data.CircularList, but that did not work either. At the end
--- the winner was an (my own) implementation of a CircularList using a Vector
--- that was linking the items together (single-linked list) like so ...
---
--- [(1000000,3), (3,5), (5,8), ...]
---
--- ... means that linked-list does not only express a 'contains` relationship,
--- but also an ordering (a 'next-element` relationship).
 module Day23 where
 
 import qualified CircularList as CL
@@ -120,7 +111,7 @@ collect' label cups = ((CL.get . CL.forward . CL.move label) cups, (CL.get . CL.
 part2 :: State -> Int
 part2 (State _ cups _) = first' * second'
   where
-    -- state' = State 10000 (addCups 1000 cups) []
-    state' = State 10000000 (addCups 1000000 cups) []
+    state' = State 10000 (addCups 1000 cups) []
+    -- state' = State 10000000 (addCups 1000000 cups) []
     (State _ cups' _) = executeMoves state'
     (first', second') = collect' 1 cups'
