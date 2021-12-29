@@ -64,21 +64,21 @@ run = hspec $ do
   --     let stateAfter = State 1 ((move 5 . fromList) [3,4,6,7,2,5,8,9,1]) []
   --     placePickupCups stateBefore `shouldBe` stateAfter
 
-  describe "newCurrentCup" $ do
-    it "move1" $ do
-      let stateBefore = State 1 (fromList [3,2,8,9,1,5,4,6,7]) []
-      let stateAfter = State 0 ((move 2 . fromList) [3,2,8,9,1,5,4,6,7]) []
-      newCurrentCup stateBefore `shouldBe` stateAfter
+  -- describe "newCurrentCup" $ do
+  --   it "move1" $ do
+  --     let stateBefore = State 1 (fromList [3,2,8,9,1,5,4,6,7]) []
+  --     let stateAfter = State 0 ((move 2 . fromList) [3,2,8,9,1,5,4,6,7]) []
+  --     newCurrentCup stateBefore `shouldBe` stateAfter
 
-    it "move2" $ do
-      let stateBefore = State 1 ((move 2 . fromList) [3,2,5,4,6,7,8,9,1]) []
-      let stateAfter = State 0 ((move 5 . fromList) [3,2,5,4,6,7,8,9,1]) []
-      newCurrentCup stateBefore `shouldBe` stateAfter
+  --   it "move2" $ do
+  --     let stateBefore = State 1 ((move 2 . fromList) [3,2,5,4,6,7,8,9,1]) []
+  --     let stateAfter = State 0 ((move 5 . fromList) [3,2,5,4,6,7,8,9,1]) []
+  --     newCurrentCup stateBefore `shouldBe` stateAfter
 
-    it "move3" $ do
-      let stateBefore = State 1 ((move 5 . fromList) [3,4,6,7,2,5,8,9,1]) []
-      let stateAfter = State 0 ((move 8 . fromList) [3,4,6,7,2,5,8,9,1]) []
-      newCurrentCup stateBefore `shouldBe` stateAfter
+  --   it "move3" $ do
+  --     let stateBefore = State 1 ((move 5 . fromList) [3,4,6,7,2,5,8,9,1]) []
+  --     let stateAfter = State 0 ((move 8 . fromList) [3,4,6,7,2,5,8,9,1]) []
+  --     newCurrentCup stateBefore `shouldBe` stateAfter
 
   describe "actions" $ do
     it "move1" $ do
@@ -127,9 +127,9 @@ run = hspec $ do
     it "simple" $ do
        collect' 1 ((move 8 . fromList) [5,8,3,7,4,1,9,2,6]) `shouldBe` (9,2)
 
-  describe "part2" $ do
-    it "testcases" $ do
-      part2 (input "./input/Day23p1test.txt") `shouldBe` 149245887792
+  -- describe "part2" $ do
+  --   it "testcases" $ do
+  --     part2 (input "./input/Day23p1test.txt") `shouldBe` 149245887792
 
   --   it "puzzle" $ do
   --     part2 (input "./input/Day23p1.txt") `shouldBe` 9

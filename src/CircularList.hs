@@ -1,6 +1,5 @@
 -- |
--- A CircularList that uses a linked list based on Data.Vector
--- for speed (Data.List is way to slow for large lists).
+-- A CircularList that uses a linked list based on Data.Vector.
 --
 -- Here are a couple of working/design assumptions ...
 --
@@ -8,7 +7,7 @@
 -- from 1 to N in a/the given order. And the smallest element is 1.
 -- * the linked-list will always have one element it: (0,0). With
 -- this element in it the CircularList is considered empty. We need
--- this element because Seq is to the base of 0 and our lists are
+-- this element because Vector is to the base of 0 and our lists are
 -- starting with 1.
 -- * to remove an element from the list the predecessor and the
 -- successor need to be re-linked. The element it-self will be marked
