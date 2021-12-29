@@ -106,12 +106,6 @@ part1 state = ints2Int $ collect 1 cups
   where
     (State _ cups _) = executeMoves state
 
--- | Take a list of cups and add cups to get the given size.
-addCups :: Int -> CL.CircularList -> CL.CircularList
-addCups size cl = CL.fromList (cups ++ [maximum cups + 1 .. size])
-  where
-    cups = CL.toList cl
-
 -- | Collect values of the 2 ups after cup 'label'
 collect' :: Int -> CL.CircularList -> (Int, Int)
 collect' label cups = ((CL.get . CL.forward . CL.move label) cups, (CL.get . CL.forward . CL.forward . CL.move label) cups)
@@ -120,7 +114,7 @@ collect' label cups = ((CL.get . CL.forward . CL.move label) cups, (CL.get . CL.
 part2 :: State -> Int
 part2 (State _ cups _) = first' * second'
   where
-    -- state' = State 10000 (addCups 1000 cups) []
-    state' = State 10000000 (addCups 1000000 cups) []
+    state' = State 100000 (CL.fromList' 1000000 (CL.toList cups)) []
+    -- state' = State 10000000 (CL.fromList' 1000000 (CL.toList cups)) []
     (State _ cups' _) = executeMoves state'
     (first', second') = collect' 1 cups'

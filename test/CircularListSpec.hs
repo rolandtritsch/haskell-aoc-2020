@@ -16,6 +16,30 @@ run = hspec $ do
       toList cl `shouldBe` []
       isEmpty cl `shouldBe` True
 
+    it "single" $ do
+      let cl = fromList [1]
+      toList cl `shouldBe` [1]
+      isEmpty cl `shouldBe` False
+      isIn 1 cl `shouldBe` True
+
+  describe "fromList'" $ do
+    it "simple" $ do
+      let cl = fromList' 10 [3,2,1]
+      toList cl `shouldBe` [3,2,1,4,5,6,7,8,9,10]
+
+    it "empty" $ do
+      let cl = fromList' 0 []
+      toList cl `shouldBe` []
+      isEmpty cl `shouldBe` True
+
+    it "no initial" $ do
+      let cl = fromList' 10 []
+      toList cl `shouldBe` [1 .. 10]
+      isEmpty cl `shouldBe` False
+      isIn 1 cl `shouldBe` True
+      isIn 10 cl `shouldBe` True
+      isIn 11 cl `shouldBe` False
+      
   describe "toList" $ do
     it "simple" $ do
       let cl = fromList [1,2,3]
@@ -38,8 +62,13 @@ run = hspec $ do
     it "simple" $ do
       let cl = fromList []
       isEmpty cl `shouldBe` True
-      (isEmpty . insert 1) cl `shouldBe` False
 
+    it "single" $ do
+      let cl = fromList [1]
+      isEmpty cl `shouldBe` False
+      -- (isEmpty . remove) cl `shouldBe` True
+      -- (isEmpty . insert 1 . remove) cl `shouldBe` False
+      
   describe "isIn" $ do
     it "simple" $ do
       let cl = fromList [1]
@@ -74,33 +103,16 @@ run = hspec $ do
 
   describe "insert" $ do
     it "simple" $ do
-      let cl = (insert 99 . fromList) [1,2]
-      get cl `shouldBe` 1
-      (get . forward) cl `shouldBe` 99
-      (get . forward . forward) cl `shouldBe` 2
-      toList cl `shouldBe` [1,99,2]
-
-    it "empty" $ do
-      let cl = (insert 99 . fromList) []
-      get cl `shouldBe` 99
-      (get . forward) cl `shouldBe` 99
-      toList cl `shouldBe` [99]
-
-    it "complex" $ do
-      let cl = (insert 2 . insert 3 . fromList) [1]
-      get cl `shouldBe` 1
-      (get . forward) cl `shouldBe` 2
-      (get . forward . forward) cl `shouldBe` 3
-      (get . forward . forward . forward) cl `shouldBe` 1
-      toList cl `shouldBe` [1,2,3]
-
-    it "first" $ do
-      let cl = (insert 99 . fromList) [1,2,3]
-      toList cl `shouldBe` [1,99,2,3]
+      let cl = fromList' 5 [3,2,1]
+      get cl `shouldBe` 3
+      (toList . remove) cl `shouldBe` [3,1,4,5]
+      (toList . insert 2 . remove) cl `shouldBe` [3,2,1,4,5]
 
     it "last" $ do
-      let cl = (forward . forward . insert 99 . forward . forward . fromList) [1,2,3]
-      toList cl `shouldBe` [1,2,3,99]
+      let cl = fromList' 5 [3,2,1]
+      get cl `shouldBe` 3
+      (toList . remove) cl `shouldBe` [3,1,4,5]
+      (toList . move 3 . insert 2 . move 5 . remove) cl `shouldBe` [3,1,4,5,2]
 
   describe "remove" $ do
     it "simple" $ do

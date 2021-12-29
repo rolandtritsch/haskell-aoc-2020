@@ -11,58 +11,58 @@ run = hspec $ do
       let (State _ cups _) = input "./input/Day23p1test.txt"
       size cups `shouldBe` 9
 
-  describe "removeCups" $ do
-    it "move1" $ do
-      let stateBefore = State 1 (fromList [3,8,9,1,2,5,4,6,7]) []
-      let stateAfter = State 1 (fromList [3,2,5,4,6,7]) [8,9,1]
-      removeCups stateBefore `shouldBe` stateAfter
+  -- describe "removeCups" $ do
+  --   it "move1" $ do
+  --     let stateBefore = State 1 (fromList [3,8,9,1,2,5,4,6,7]) []
+  --     let stateAfter = State 1 (fromList [3,2,5,4,6,7]) [8,9,1]
+  --     removeCups stateBefore `shouldBe` stateAfter
 
-    it "move2" $ do
-      let stateBefore = State 1 ((move 2 . fromList) [3,2,8,9,1,5,4,6,7]) []
-      let stateAfter = State 1 ((move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
-      removeCups stateBefore `shouldBe` stateAfter
+  --   it "move2" $ do
+  --     let stateBefore = State 1 ((move 2 . fromList) [3,2,8,9,1,5,4,6,7]) []
+  --     let stateAfter = State 1 ((move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
+  --     removeCups stateBefore `shouldBe` stateAfter
 
-    it "move3" $ do
-      let stateBefore = State 1 ((move 5 . fromList) [3,2,5,4,6,7,8,9,1]) []
-      let stateAfter = State 1 ((move 5 . forward . fromList) [3,2,5,8,9,1]) [4,6,7]
-      removeCups stateBefore `shouldBe` stateAfter
+  --   it "move3" $ do
+  --     let stateBefore = State 1 ((move 5 . fromList) [3,2,5,4,6,7,8,9,1]) []
+  --     let stateAfter = State 1 ((move 5 . forward . fromList) [3,2,5,8,9,1]) [4,6,7]
+  --     removeCups stateBefore `shouldBe` stateAfter
 
-    it "move4" $ do
-      let stateBefore = State 1 ((move 8 . fromList) [3,4,6,7,2,5,8,9,1]) []
-      let stateAfter = State 1 ((move 8 . fromList) [4,6,7,2,5,8]) [9,1,3]
-      removeCups stateBefore `shouldBe` stateAfter
+  --   it "move4" $ do
+  --     let stateBefore = State 1 ((move 8 . fromList) [3,4,6,7,2,5,8,9,1]) []
+  --     let stateAfter = State 1 ((move 8 . fromList) [4,6,7,2,5,8]) [9,1,3]
+  --     removeCups stateBefore `shouldBe` stateAfter
       
-  describe "selectDestination" $ do
-    it "move1" $ do
-      let stateBefore = State 1 (fromList [3,2,5,4,6,7]) [8,9,1]
-      let stateAfter = State 1 ((move 2 . push . fromList) [3,2,5,4,6,7]) [8,9,1]
-      selectDestination stateBefore `shouldBe` stateAfter
+  -- describe "selectDestination" $ do
+  --   it "move1" $ do
+  --     let stateBefore = State 1 (fromList [3,2,5,4,6,7]) [8,9,1]
+  --     let stateAfter = State 1 ((move 2 . push . fromList) [3,2,5,4,6,7]) [8,9,1]
+  --     selectDestination stateBefore `shouldBe` stateAfter
 
-    it "move2" $ do
-      let stateBefore = State 1 ((move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
-      let stateAfter = State 1 ((move 7 . push . move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
-      selectDestination stateBefore `shouldBe` stateAfter
+  --   it "move2" $ do
+  --     let stateBefore = State 1 ((move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
+  --     let stateAfter = State 1 ((move 7 . push . move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
+  --     selectDestination stateBefore `shouldBe` stateAfter
 
-    it "move3" $ do
-      let stateBefore = State 1 ((move 5 . fromList) [3,2,5,8,9,1]) [4,6,7]
-      let stateAfter = State 1 ((move 3 . push . move 5 . fromList) [3,2,5,8,9,1]) [4,6,7]
-      selectDestination stateBefore `shouldBe` stateAfter
+  --   it "move3" $ do
+  --     let stateBefore = State 1 ((move 5 . fromList) [3,2,5,8,9,1]) [4,6,7]
+  --     let stateAfter = State 1 ((move 3 . push . move 5 . fromList) [3,2,5,8,9,1]) [4,6,7]
+  --     selectDestination stateBefore `shouldBe` stateAfter
 
-  describe "placePickupCups" $ do
-    it "move1" $ do
-      let stateBefore = State 1 ((move 2 . push . fromList) [3,2,5,4,6,7]) [8,9,1]
-      let stateAfter = State 1 (fromList [3,2,8,9,1,5,4,6,7]) []
-      placePickupCups stateBefore `shouldBe` stateAfter
+  -- describe "placePickupCups" $ do
+  --   it "move1" $ do
+  --     let stateBefore = State 1 ((move 2 . push . fromList) [3,2,5,4,6,7]) [8,9,1]
+  --     let stateAfter = State 1 (fromList [3,2,8,9,1,5,4,6,7]) []
+  --     placePickupCups stateBefore `shouldBe` stateAfter
 
-    it "move2" $ do
-      let stateBefore = State 1 ((move 7 . push . move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
-      let stateAfter = State 1 ((move 2 . fromList) [3,2,5,4,6,7,8,9,1]) []
-      placePickupCups stateBefore `shouldBe` stateAfter
+  --   it "move2" $ do
+  --     let stateBefore = State 1 ((move 7 . push . move 2 . fromList) [3,2,5,4,6,7]) [8,9,1]
+  --     let stateAfter = State 1 ((move 2 . fromList) [3,2,5,4,6,7,8,9,1]) []
+  --     placePickupCups stateBefore `shouldBe` stateAfter
 
-    it "move3" $ do
-      let stateBefore = State 1 ((move 3 . push . move 5 . fromList) [3,2,5,8,9,1]) [4,6,7]
-      let stateAfter = State 1 ((move 5 . fromList) [3,4,6,7,2,5,8,9,1]) []
-      placePickupCups stateBefore `shouldBe` stateAfter
+  --   it "move3" $ do
+  --     let stateBefore = State 1 ((move 3 . push . move 5 . fromList) [3,2,5,8,9,1]) [4,6,7]
+  --     let stateAfter = State 1 ((move 5 . fromList) [3,4,6,7,2,5,8,9,1]) []
+  --     placePickupCups stateBefore `shouldBe` stateAfter
 
   describe "newCurrentCup" $ do
     it "move1" $ do
