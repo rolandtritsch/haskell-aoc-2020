@@ -1,6 +1,5 @@
 -- |
--- A CircularList that uses a linked list based on Data.Sequence
--- for speed (Data.List is way to slow for large lists).
+-- A CircularList that uses a linked-list based on Data.Sequence.
 --
 -- Here are a couple of working/design assumptions ...
 --
@@ -11,8 +10,8 @@
 -- this element because Seq is to the base of 0 and our lists are
 -- starting with 1.
 -- * to remove an element from the list the predecessor and the
--- successor need to be re-linked. The element it-self will be marked
--- as deleted by making it point to 0.
+-- successor need to be re-linked. The element it-self will be
+-- marked as deleted by making it point to 0.
 -- * we will never add/insert an element/item that is bigger than N. 
 module CircularList where
 
@@ -45,11 +44,10 @@ data StackIsEmptyException = StackIsEmptyException
 
 instance Exception StackIsEmptyException
 
-type Current = Int
 type Item = Int
 
 -- | The list.
-data CircularList = CircularList Current (DS.Seq Item) [Current]
+data CircularList = CircularList Item (DS.Seq Item) [Item]
   deriving (Show, Eq)
 
 -- | Make a new CircularList from a list.
