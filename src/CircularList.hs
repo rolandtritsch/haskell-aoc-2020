@@ -1,10 +1,5 @@
 -- |
--- A CircularList that uses a double-linked list based
--- on Data.Map for speed (Data.List is way to slow for
--- large lists).
---
--- Was thinking use something like element -> (next, previous),
--- but decided to go with to maps instead.
+-- A CircularList that uses a double-linked list based on Data.Map.
 module CircularList where
 
 import Control.Exception
@@ -116,6 +111,6 @@ push (CircularList current next stack)
 -- | Pop the stack and move to that item.
 pop :: CircularList -> CircularList
 pop (CircularList _ _ []) = throw StackIsEmptyException
-pop list@(CircularList _ _ (to:stack)) = (pop' . move to) list
+pop cl@(CircularList _ _ (to:stack)) = (pop' . move to) cl
   where
     pop' (CircularList current next _) = CircularList current next stack
