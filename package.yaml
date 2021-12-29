@@ -25,11 +25,12 @@ library:
   - -Wall -Werror
   dependencies:
   - algebra
-  - MissingH
   - containers
   - pcre2
   - split
   - text
+  - vector
+  - MissingH
 
 executables:
   haskell-aoc-exe:

@@ -8,8 +8,8 @@ run :: IO ()
 run = hspec $ do
   describe "fromList" $ do
     it "simple" $ do
-      let cl = fromList [1,2,3]
-      toList cl `shouldBe` [1,2,3]
+      let cl = fromList [3,2,1]
+      toList cl `shouldBe` [3,2,1]
 
     it "empty" $ do
       let cl = fromList []

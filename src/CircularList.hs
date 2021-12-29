@@ -1,5 +1,5 @@
 -- |
--- A CircularList that uses a linked list based on Data.Sequence
+-- A CircularList that uses a linked list based on Data.Vector
 -- for speed (Data.List is way to slow for large lists).
 --
 -- Here are a couple of working/design assumptions ...
@@ -17,8 +17,7 @@
 module CircularList where
 
 import Control.Exception
-import Data.List (sort)
-import qualified Data.Sequence as DS
+import qualified Data.Vector as DV
 
 data AlreadyExistsException = AlreadyExistsException
   deriving (Show, Eq)
@@ -49,59 +48,49 @@ type Current = Int
 type Item = Int
 
 -- | The list.
-data CircularList = CircularList Current (DS.Seq Item) [Current]
+data CircularList = CircularList Current (DV.Vector Item) [Current]
   deriving (Show, Eq)
 
 -- | Make a new CircularList from a list.
 fromList :: [Int] -> CircularList
-fromList [] = CircularList 0 (DS.singleton 0) []
+fromList [] = CircularList 0 (DV.singleton 0) []
 fromList initial = CircularList (head initial) next []
   where
-    next = DS.fromList $ map snd $ sort $ (0,0) : zip initial (tail initial ++ [head initial])
+    next = (DV.replicate (length initial + 1) 0) DV.// (zip initial (tail initial ++ [head initial]))
 
 -- | Make a new CircularList of size N (from an initial list).
 fromList' :: Int -> [Int] -> CircularList
-fromList' 0 _ = CircularList 0 (DS.singleton 0) []
-fromList' n [] = CircularList 1 (DS.fromFunction (n + 1) (linkIt n)) []
-  where
-    linkIt n' i'
-      | i' == 0 = 0
-      | i' == n' = 1
-      | otherwise = i' + 1
+fromList' 0 _ = CircularList 0 (DV.singleton 0) []
+fromList' n [] = CircularList 1 (DV.iterateN (n + 1) ((+) 1) 1 DV.// [(0,0), (n, 1)]) []
 fromList' n initial = CircularList (head initial) next []
   where
-    initial' = DS.fromList $ map snd $ sort $ (0,0) : zip initial (tail initial ++ [length initial + 1])
-    next = initial' DS.>< DS.fromFunction (n - length initial) (linkIt n)
-    linkIt n' i'
-      | length initial + i' + 1 == n' = head initial
-      | otherwise = length initial + i' + 2
+    initial' = (DV.replicate (length initial + 1) 0) DV.// (zip initial (tail initial ++ [length initial + 1]))
+    initial'' = DV.iterateN (n - length initial) ((+)1) (length initial + 2)
+    next = (initial' DV.++ initial'') DV.// [(n, head initial)]
 
 -- | Turn the circular list into a list (from current).
 toList :: CircularList -> [Int]
 toList cl@(CircularList current next _)
   | isEmpty cl = []
-  | otherwise = current : go (DS.index next current)
+  | otherwise = current : go (DV.unsafeIndex next current)
   where
     go item
       | item == current = []
-      | otherwise = item : go (DS.index next item)
+      | otherwise = item : go (DV.unsafeIndex next item)
     
 -- | Get the length of the list.
 size :: CircularList -> Int
-size (CircularList _ next _) = DS.length next - 1
+size (CircularList _ next _) = DV.length next - 1
 
 -- | Check, if list is empty.
 isEmpty :: CircularList -> Bool
-isEmpty (CircularList _ next _) = go (DS.findIndexL ((/=) 0) next)
-  where
-    go Nothing = True
-    go (Just _) = False
+isEmpty (CircularList _ next _) = DV.all ((==) 0) next
 
 -- | Check, if item is in the list.
 isIn :: Int -> CircularList -> Bool
 isIn item cl@(CircularList _ next _)
   | item < 1 || item > size cl = False
-  | otherwise = go (DS.index next item)
+  | otherwise = go (DV.unsafeIndex next item)
   where
     go 0 = False
     go _ = True
@@ -116,7 +105,7 @@ get cl@(CircularList current _ _)
 forward :: CircularList -> CircularList
 forward cl@(CircularList current next stack)
   | isEmpty cl = throw ListIsEmptyException
-  | otherwise = CircularList (DS.index next current) next stack
+  | otherwise = CircularList (DV.unsafeIndex next current) next stack
 
 -- | Insert item into list (after current).
 --
@@ -128,7 +117,7 @@ insert item cl@(CircularList current next stack)
   | item < 1 || item > size cl = throw OutOfRangeException
   | otherwise = CircularList current next' stack
   where
-    next' = DS.update item (DS.index next current) $ DS.update current item next
+    next' = (next DV.// [(current, item)]) DV.// [(item, DV.unsafeIndex next current)]
 
 -- | Remove the item after the current item from the list.
 remove :: CircularList -> CircularList
@@ -136,7 +125,7 @@ remove cl@(CircularList current next stack)
   | isEmpty cl = throw ListIsEmptyException
   | otherwise = CircularList current next' stack
     where
-      next' = DS.update current (DS.index next (DS.index next current)) $ DS.update (DS.index next current) 0 next
+      next' = (next DV.// [(DV.unsafeIndex next current, 0)]) DV.// [(current, DV.unsafeIndex next (DV.unsafeIndex next current))]
 
 -- | Move current to ...
 move :: Int -> CircularList -> CircularList
