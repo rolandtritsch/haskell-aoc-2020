@@ -79,7 +79,7 @@ playRound2 game@(Game player1 player2) = nextGame
           | card1 > card2 = Game (deck1 ++ [card1, card2]) deck2
           | otherwise = Game deck1 (deck2 ++ [card2, card1])
 
--- Play a subgame (part2).
+-- | Play a subgame (part2).
 playSubGame2 :: Game -> Game
 playSubGame2 (Game player1 player2) = nextGame
   where
