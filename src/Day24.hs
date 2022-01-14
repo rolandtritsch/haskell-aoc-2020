@@ -9,7 +9,7 @@
 -- navigate/walk a hex-grid (https://trits.ch/3bJeNeZ).
 --
 -- To solve this we walk all the steps for any given tile and will end
--- up with a/the list of desination tiles.
+-- up with a/the list of destination tiles.
 --
 -- Part 1 - Look for all destination tiles that are there/where flipped
 -- an odd number of times.
@@ -24,21 +24,20 @@ import Util (inputRaw)
 import Prelude
 
 type Step = String
-
 type Steps = [Step]
-
 type Tiles = [Steps]
 
 data Position = Position Int Int
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
--- | read the input file.
+-- | Read the input file and return the paths to the tiles to turn.
 input :: String -> Tiles
 input filename = map processTile $ lines $ inputRaw filename
   where
     processTile line = map unpack $ matchAll (pack "(e|se|sw|w|nw|ne)") (pack line)
 
--- | walk a step (until there are no more steps)
+-- | Walk a step (until there are no more steps) and (at the end)
+-- return the final position.
 walk :: Steps -> Position -> Position
 walk [] position = position
 walk ("e" : steps) (Position x y) = walk steps (Position (x + 1) y)
@@ -49,13 +48,18 @@ walk ("nw" : steps) (Position x y) = walk steps (Position (x -1) (y + 1))
 walk ("ne" : steps) (Position x y) = walk steps (Position x (y + 1))
 walk _ _ = error "Invalid step"
 
--- | solve part1.
-part1 :: Tiles -> Int
-part1 tiles = length $ filter (\(n, _) -> odd n) groupedByCount
+-- | Take a list of tile paths, flip them over and return a/the list of
+-- black tiles/positions.
+blackTiles :: Tiles -> [Position]
+blackTiles tiles = concat $ map snd $ filter (\(n, _) -> odd n) groupedByCount
   where
     destinationTiles = map (\steps -> walk steps (Position 0 0)) tiles
     groupedByCount = map (\positions -> (length positions, positions)) $ group $ sort destinationTiles
 
--- | solve the part2.
+-- | Solve part1.
+part1 :: Tiles -> Int
+part1 tiles = length $ blackTiles tiles 
+
+-- | Solve part2.
 part2 :: Tiles -> Int
 part2 = length
