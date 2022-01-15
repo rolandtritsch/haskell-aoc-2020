@@ -26,9 +26,8 @@ import qualified Data.Map as M
 import Data.String.Utils (strip)
 import Data.Text (pack, unpack)
 import Text.Regex.Pcre2 (captures)
-
-import Prelude
 import Util (inputRaw)
+import Prelude
 
 type Allergene = String
 
@@ -100,11 +99,11 @@ removeIngredientsBySingleton foods = diffMapValues singletons foods
 -- | Foods that a free of allergenes.
 foodsFreeOfAllergens :: Foods -> Foods
 foodsFreeOfAllergens foods = go foods False
+  where
+    go foods' True = foods'
+    go foods' False = go foods'' (foods' == foods'')
       where
-        go foods' True = foods'
-        go foods' False = go foods'' (foods' == foods'')
-          where
-            foods'' = removeIngredientsBySingleton $ removeIngredientsByIntersection foods'
+        foods'' = removeIngredientsBySingleton $ removeIngredientsByIntersection foods'
 
 -- | All ingredients that are free of allergens.
 allIncredientsFreeOfAllergens :: Foods -> [Ingredient]
@@ -117,7 +116,7 @@ part1 foods = length safeToEat
     safeToEat = filter (flip elem (allIncredientsFreeOfAllergens foods)) (allIncredients foods)
     allIncredients = concat . nub . concat . M.elems
 
--- | Go through all foods and find the ingredients that contains allergenes. 
+-- | Go through all foods and find the ingredients that contains allergenes.
 ingredientContainsAllergene :: Foods -> [(Ingredient, Allergene)]
 ingredientContainsAllergene foods = go foods False []
   where

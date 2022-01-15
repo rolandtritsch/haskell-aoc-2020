@@ -14,7 +14,6 @@ module Day22 where
 import Data.List.Split (splitOn)
 import Data.Text (pack, unpack)
 import Text.Regex.Pcre2 (matchAll)
-
 import Util (inputRaw)
 import Prelude
 
@@ -31,7 +30,7 @@ input filename = Game player1' player2'
     (p1 : p2 : _) = map unpack $ matchAll (pack "(Player [12]:\n)([0-9]*\n)*") (pack $ inputRaw filename)
     buildDeck p = map read $ init $ tail $ splitOn "\n" p
 
--- | Return/Calculate the score for a given deck. 
+-- | Return/Calculate the score for a given deck.
 score :: [Int] -> Int
 score deck = sum $ map (\(a, b) -> a * b) $ zip deck (reverse [1 .. (length deck)])
 
@@ -75,7 +74,7 @@ playRound2 game@(Game player1 player2) = nextGame
     nextGame = playCards (head player1) (head player2) (tail player1) (tail player2)
       where
         playCards card1 card2 deck1 deck2
-          | card1 <= (length deck1) && card2 <= (length deck2) = playSubGame2 game 
+          | card1 <= (length deck1) && card2 <= (length deck2) = playSubGame2 game
           | card1 > card2 = Game (deck1 ++ [card1, card2]) deck2
           | otherwise = Game deck1 (deck2 ++ [card2, card1])
 
