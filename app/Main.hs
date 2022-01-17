@@ -47,7 +47,7 @@ import qualified Day21.Part2 as D21P2
 import qualified Day22.Part1 as D22P1
 -- import qualified Day22.Part2 as D22P2
 import qualified Day23.Part1 as D23P1
--- import qualified Day23.Part2 as D23P2
+import qualified Day23.Part2 as D23P2
 import qualified Day24.Part1 as D24P1
 import qualified Day24.Part2 as D24P2
 import qualified Day25.Part1 as D25P1
@@ -102,7 +102,7 @@ main = do
   D22P1.main
 --   D22P2.main
   D23P1.main
---   D23P2.main
+  D23P2.main
   D24P1.main
   D24P2.main
   D25P1.main
