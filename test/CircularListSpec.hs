@@ -94,7 +94,11 @@ run = hspec $ do
       let cl = fromList 10 []
       isIn 1 cl `shouldBe` False
       isIn 99 cl `shouldBe` False
-      
+
+    it "bug 1" $ do
+      let cl = fromList 5 [1,3,5]
+      isIn 5 cl `shouldBe` True
+
   describe "get" $ do
     it "simple" $ do
       let cl = fromList 1 [1]

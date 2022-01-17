@@ -83,7 +83,7 @@ isEmpty (CircularList _ next _) = DV.all ((==) 0) next
 -- | Check, if item is in the list.
 isIn :: Int -> CircularList -> Bool
 isIn item cl@(CircularList _ next _)
-  | item < 1 || item > size cl = False
+  | item < 1 || item > allocated cl = False
   | otherwise = go (DV.unsafeIndex next item)
   where
     go 0 = False
@@ -127,7 +127,7 @@ remove cl@(CircularList current next stack)
 move :: Int -> CircularList -> CircularList
 move item cl@(CircularList _ next stack)
   | isEmpty cl = throw ListIsEmptyException
-  | not $ isIn item cl = throw ItemNotFoundException
+  | (not . isIn item) cl = throw ItemNotFoundException
   | otherwise = CircularList item next stack
 
 -- | Push the current item on the stack.
