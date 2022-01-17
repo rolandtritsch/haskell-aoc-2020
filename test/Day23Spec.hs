@@ -132,5 +132,6 @@ run = hspec $ do
       -- part2 (input "./input/Day23p1test.txt") `shouldBe` 149245887792
       part2 (input "./input/Day23p1test.txt") `shouldBe` 430728
 
-    -- it "puzzle" $ do
-    --   part2 (input "./input/Day23p1.txt") `shouldBe` 9
+    it "puzzle" $ do
+      -- part2 (input "./input/Day23p1.txt") `shouldBe` 404431096944
+      part2 (input "./input/Day23p1.txt") `shouldBe` 344064
