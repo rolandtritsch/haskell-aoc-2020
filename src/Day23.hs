@@ -1,7 +1,7 @@
 -- |
 -- Problem: <https://adventofcode.com/2020/day/23>
 --
--- Solution: 
+-- Solution:
 --
 -- General - Read careful. There is nothing difficult about this.
 -- if you follow the instructions and implement the actions correctly
@@ -30,25 +30,27 @@ import Util (inputRaw)
 import Prelude
 
 type Moves = Int
+
 type Pickup = Int
 
 -- | The State to maintain between moves.
 data State = State Moves CL.CircularList [Pickup]
-  deriving (Eq, Show) 
+  deriving (Eq, Show)
 
 -- | Read the input and return the initial state.
 input :: String -> State
 input filename = State moves' cups' []
   where
     moves' = read first'
-    cups' = CL.fromList (map digitToInt second')
-    (first':second':_) = lines $ inputRaw filename
+    cups' = CL.fromList (length cups) cups
+    cups = map digitToInt second'
+    (first' : second' : _) = lines $ inputRaw filename
 
 -- | As part of a move: Remove 3 cups (and put them into pickup).
 removeCups :: State -> State
 removeCups (State moves cups _) = State moves cups' pickup'
   where
-    (cups', pickup') = foldl collectPickup (cups, []) [1..3 :: Int]
+    (cups', pickup') = foldl collectPickup (cups, []) [1 .. 3 :: Int]
     collectPickup (cs, ps) _ = (CL.remove cs, ps ++ [(CL.get . CL.forward) cs])
 
 -- | As part of a move: Select the next destination/current.
@@ -105,7 +107,12 @@ collect' label cups = ((CL.get . CL.forward . CL.move label) cups, (CL.get . CL.
 part2 :: State -> Int
 part2 (State _ cups _) = first' * second'
   where
-    state' = State 10000 (CL.fromList' 1000 (CL.toList cups)) []
-    -- state' = State 10000000 (CL.fromList' 1000000 (CL.toList cups)) []
-    (State _ cups' _) = executeMoves state'
-    (first', second') = collect' 1 cups'
+    numberOfMoves = 10000
+    -- numberOfMoves = 10000000
+    numberOfCups = 1000
+    -- numberOfCups = 1000000
+    cups' = CL.toList cups
+    cups'' = cups' ++ [length cups' + 1 .. numberOfCups]
+    state' = State numberOfMoves (CL.fromList numberOfCups cups'') []
+    (State _ cups''' _) = executeMoves state'
+    (first', second') = collect' 1 cups'''
