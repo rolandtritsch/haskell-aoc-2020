@@ -40,7 +40,7 @@ jobs:
         github_token: ${{ github.token }}
 
     - name: Build
-      run: stack exec -- haddock ./src/*.hs --html --odir ./docs
+      run: stack clean && stack build --no-run-tests && stack exec -- haddock ./src/*.hs --html --odir ./docs
 
     - name: Push
       uses: EndBug/add-and-commit@v7
