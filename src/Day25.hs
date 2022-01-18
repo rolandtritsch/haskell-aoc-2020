@@ -14,7 +14,7 @@
 -- Part 1 - Brute force the card loop size and use it to calculate the door
 -- encryption key.
 --
--- Part 2 - ???
+-- Part 2 - Happy Holidays!!!
 module Day25 where
 
 import Util (inputRaw)

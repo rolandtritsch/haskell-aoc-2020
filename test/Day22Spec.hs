@@ -66,4 +66,4 @@ run = hspec $ do
       part2 (input "./input/Day22p1test.txt") `shouldBe` 291
 
     -- it "puzzle" $ do
-    --   part2 (input "./input/Day22p1.txt") `shouldBe` 0
+    --   part2 (input "./input/Day22p1.txt") `shouldBe` 35676

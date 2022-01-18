@@ -21,6 +21,10 @@
 -- improvements, but we get a nice interface)
 -- * ... and then I experimented with various data-structures to improve
 -- the performance
+--
+-- There are various day23p2-* branches that you can take a look at to
+-- see/understand the options I looked at. At the end I went with a
+-- vector based implementation (that is still very slow).
 module Day23 where
 
 import qualified CircularList as CL
