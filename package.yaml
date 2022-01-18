@@ -3,8 +3,8 @@ version:             0.1.0.0
 github:              "rolandtritsch/haskell-aoc-2020"
 license:             BSD3
 author:              "Roland Tritsch"
-maintainer:          "roland@tritsch.org"
-copyright:           "2020 Roland Tritsch"
+maintainer:          "roland@tritsch.email"
+copyright:           "2020 (c) Roland Tritsch"
 
 extra-source-files:
 - README.md
