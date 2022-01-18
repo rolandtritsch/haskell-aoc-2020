@@ -8,7 +8,9 @@
 --
 -- Part 1 - Found out who won and calculate the score.
 --
--- Part 2 - ???
+-- Part 2 - This was hard. You had to read the problem description
+-- carefully. And then I introduced a couple of bugs that where
+-- not caught be the given testcases.
 module Day22 where
 
 import Data.List.Split (splitOn)
