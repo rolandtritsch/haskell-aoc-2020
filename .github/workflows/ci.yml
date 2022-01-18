@@ -51,6 +51,31 @@ jobs:
         branch: gh-pages
         message: 'Update docs'
 
+  run-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        key: stack
+        path: |
+          ~/.stack
+          ~/.stack-work
+
+    - name: Setup
+      uses: haskell/actions/setup@v1
+      with:
+        ghc-version: '8.8.3' # Exact version of ghc to use
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: stack clean && stack build --no-run-tests && stack exec haskell-aoc-exe
+
   test-build:
     runs-on: ubuntu-latest
 
