@@ -14,7 +14,7 @@
 --
 -- Part 2 - Take 30000000 turns and return the last number spoken.
 -- Big surprise (or not): The implementation for part1 is slow, but ...
--- ... not so slow that it is not returing a within 2 minutes.
+-- ... not so slow that it is not returning a solution within 2 minutes.
 module Day15 where
 
 import qualified Data.Map as M
