@@ -25,7 +25,7 @@ type Number = Int
 
 type Turn = Int
 
-type Spoken = M.Map Number [Turn]
+type Spoken = M.Map Number Turn
 
 -- | Read the input file.
 input :: String -> [Number]
@@ -33,29 +33,27 @@ input filename = map read $ lines $ inputRaw filename
 
 -- | Speak the number (and return the record of spoken numbers).
 speak :: Number -> Turn -> Spoken -> Spoken
-speak number turn spoken = M.insertWith (++) number [turn] spoken
+speak number turn spoken = M.insert number turn spoken
 
 -- | What to say.
 whatToSay :: Number -> Turn -> Spoken -> Number
 whatToSay number turn spoken
   | M.notMember number spoken = 0
-  | otherwise = turn - lastTime
-  where
-    lastTime = head $ spoken M.! number
+  | otherwise = turn - (spoken M.! number)
 
 -- | What's the next turn?
-nextTurn :: Number -> Spoken -> Turn -> Turn -> [Number]
-nextTurn number _ _ 0 = [number]
-nextTurn number spoken turn turned = nextTurn nextNumber nextSpoken (turn + 1) (turned - 1) ++ [number]
+nextTurn :: Number -> Spoken -> Turn -> Turn -> Number
+nextTurn number _ _ 0 = number
+nextTurn number spoken turn turned = nextTurn nextNumber nextSpoken (turn + 1) (turned - 1)
   where
     nextNumber = whatToSay number turn spoken
     nextSpoken = speak number turn spoken
 
 -- | Solve the puzzle.
 solve :: Turn -> [Number] -> Number
-solve turns numbers = head $ nextTurn initialNumber initialSpoken initialTurn initialTurned
+solve turns numbers = nextTurn initialNumber initialSpoken initialTurn initialTurned
   where
-    initialSpoken = M.fromList $ zip numbers [[t] | t <- [1 .. (length numbers)]]
+    initialSpoken = M.fromList $ zip numbers [1 .. (length numbers)]
     initialNumber = whatToSay (last numbers) (length numbers) initialSpoken
     initialTurn = length numbers + 1
     initialTurned = turns - length numbers - 1
