@@ -13,4 +13,4 @@ To make this work you need to ...
 * run `stack exec haskell-aoc-exe`
 * run `stack test haskell-aoc:haskell-aoc-test-day00 --file-watch` to test a specific day
 
-The [documentation](http://tedn.life/haskell-aoc-2020) (with some explanations on the solutions) is on the `gh-pages` branch (that branch gets automatically updated/maintained by the build system) .
+The [documentation](http://tedn.life/haskell-aoc-2020) (with some explanations on the solutions) is on the `gh-pages` branch (that branch gets automatically updated/maintained by the build system).
